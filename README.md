@@ -2,12 +2,19 @@
 
 [Portfolio](https://hheejuice.github.io/Heeju_Portfolio/)
 
-## Contents
+### Contents
 * Data Analysis and Visualization
-* Machine Learning
+
+* ### Machine Learning
   * Item 2a
   * Item 2b
+ 
+ - [ ] An uncompleted task
+    - [ ] A subtask
+ - [x] A completed task
 * Natural Language Processing
+
+----
 
 ## Welcome to GitHub Pages
 
