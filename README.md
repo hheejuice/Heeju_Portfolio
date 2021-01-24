@@ -1,3 +1,7 @@
+## Data Science Portfolio
+
+[Portfolio](https://hheejuice.github.io/Heeju_Portfolio/)
+
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/hheejuice/Heeju_Portfolio/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
