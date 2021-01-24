@@ -2,6 +2,13 @@
 
 [Portfolio](https://hheejuice.github.io/Heeju_Portfolio/)
 
+## Contents
+* Data Analysis and Visualization
+* Machine Learning
+  * Item 2a
+  * Item 2b
+* Natural Language Processing
+
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/hheejuice/Heeju_Portfolio/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
