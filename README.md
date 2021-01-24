@@ -6,7 +6,7 @@
 * #### Data Analysis and Visualization
 
 * #### Machine Learning
-  * [~~ project using ML Logistic Regression](url): ndflnfln
+  * [~~ project using ML Logistic Regression](https://hheejuice.github.io/Heeju_Portfolio/): ndflnfln
   * [~~ project using ML Classification](url): ndflnfln
   * Cluster Analysis
  
