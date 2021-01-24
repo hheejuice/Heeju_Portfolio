@@ -3,16 +3,23 @@
 [Portfolio](https://hheejuice.github.io/Heeju_Portfolio/)
 
 ### Contents
-* Data Analysis and Visualization
+* #### Data Analysis and Visualization
 
-* ### Machine Learning
-  * Item 2a
-  * Item 2b
+* #### Machine Learning
+  * ##### Regression
+  * Classification
+  * Cluster Analysis
  
+* #### Natural Language Processing
+  * Tokenization
+  * Stopword Removal
+  * Lemmatization & Stemming
+  https://monkeylearn.com/blog/nlp-ai/
+
  - [ ] An uncompleted task
     - [ ] A subtask
  - [x] A completed task
-* Natural Language Processing
+
 
 ----
 
