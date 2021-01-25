@@ -4,6 +4,7 @@
 
 ### Contents
 * #### Data Analysis and Visualization
+ * [Customer Card Customer Analysis](Credit Card/Credit-Card-Customers.md): dfsdfd
 
 * #### Machine Learning
   * [project using ML Logistic Regression](https://hheejuice.github.io/Heeju_Portfolio/): ndflnfln
