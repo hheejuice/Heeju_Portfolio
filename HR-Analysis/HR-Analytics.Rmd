@@ -1,0 +1,135 @@
+---
+title: "HR Analysis"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r package, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#load required packages
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(Hmisc)
+library(knitr)
+library(kableExtra)
+library(scales)
+```
+
+## Data PreProcessing
+
+### Basic Setup
+
+```{r setup, include=TRUE}
+#read data
+test <- read.csv("aug_test.csv", stringsAsFactors = F)
+train <- read.csv("aug_train.csv", stringsAsFactors = F)
+
+colnames(test)
+colnames(train)
+
+summary_test <- describe(test)
+summary_test
+
+summary_train <- describe(train)
+summary_train
+
+length(unique(test[,"enrollee_id"])) # no duplicates
+length(unique(train[,"enrollee_id"])) # no duplicates
+
+sapply(test, function(x) sum(is.na(x) | x == 0 | x == ""))
+sapply(train, function(x) sum(is.na(x) | x == 0 | x == ""))
+
+#test1 <- test1[!(test1$Customer_Age %in% boxplot(df$Customer_Age)$out),]
+
+```
+
+### Visualization 
+
+#### Major
+```{r major, include=TRUE}
+# pie chart for major discipline
+major <- train %>%
+  filter(!(major_discipline == "")) %>% # remove blank values from 'major_discipline'
+  group_by(major_discipline) %>%
+  summarise(percent = n()/nrow(.) * 100)
+
+pie <- ggplot(major, aes(x = "", y = percent, fill = major_discipline)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  geom_text(aes(x = 1.58, label = paste0(round(percent,1),"%")),
+            position = position_stack(vjust = .5), size = 2.3) +
+  coord_polar("y", start = 0)
+pie
+```
+
+#### Education Level 
+```{r edu, include=T}
+# pie chart for education level
+education <- train %>%
+  filter(!(education_level == "")) %>% # remove blank values from 'major_discipline'
+  group_by(education_level) %>%
+  summarise(percent = n()/nrow(.) * 100)
+
+pie <- ggplot(education, aes(x = "", y = percent, fill = education_level)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
+            position = position_stack(vjust = .5), size = 2.3) +
+  coord_polar("y", start = 0)
+pie
+
+#pie <- ggplot(major, aes(x = "", y = percent, fill = major_discipline)) +
+#  geom_bar(width = 1, stat = "identity", color = "white") +
+#  scale_y_continuous(breaks = round(cumsum(rev(major$percent)), 1)) +
+#  geom_text(aes(label = paste(round(percent,1),"%")),position = position_stack(vjust = .5)) +
+#  coord_polar("y", start = 0)
+#pie
+```
+
+#### Experience
+```{r exp, include=T}
+my_order <- c('<1','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15',
+           '16','17','18','19','20','>20')
+
+exp <- train %>%
+  filter(!(experience == "")) %>%
+  group_by(experience) %>%
+  summarise(count = n()) %>%
+  arrange(match(experience, my_order))
+
+bar <- ggplot(exp, aes(x = experience, y = count)) +
+  geom_bar(fill = "#0073C2FF", stat = "identity") +
+  geom_text(aes(label = count), vjust = -0.3)
+bar
+
+#---------
+my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
+
+size <- train %>%
+  filter(!(company_size == "")) %>%
+  group_by(company_size) %>%
+  summarise(count = n()) %>%
+  arrange(match(company_size, my_order))
+
+bar <- ggplot(size, aes(x = company_size, y = count)) +
+  geom_bar(fill = "#0073C2FF", stat = "identity") +
+  geom_text(aes(label = count), vjust = -0.3)
+bar
+```
+
+#### Company Type
+```{r company, include=T}
+company <- train %>%
+  filter(!company_type == "") %>%
+  group_by(company_type) %>%
+  summarise(count = n())
+
+freq <- ggplot(company, aes(fct_rev(fct_reorder(company_type, count)),count)) +
+  geom_bar(fill = "#0073C2FF", stat = "identity") +
+  geom_text(aes(label = count), vjust = -0.3) +
+  labs(x = "Company Type")
+freq
+  
+```
+
+

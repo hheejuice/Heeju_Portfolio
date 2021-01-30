@@ -1,0 +1,315 @@
+---
+title: "Credit Card Customer Analysis"
+output: 
+  html_document:
+    keep_md: true
+---
+
+## Loading Packages
+
+```{r package, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#load required packages
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(Hmisc)
+library(knitr)
+library(kableExtra)
+```
+
+## Data PreProcessing
+
+### Basic Setup
+
+original data retrieved from Kaggle <br>
+try to understand data
+
+read dataset.. remove weird columns
+
+```{r setup, include=TRUE}
+#read data
+df <- read.csv("BankChurners.csv", stringsAsFactors = F)
+
+#remove columns that contain "Naive"
+df <- df %>%
+  select(-contains('Naive'))
+
+#check column names again
+names(df)
+
+summary_df <- describe(df)
+summary_df
+#unlist(summary_df[[1]])[2:12]
+
+# check the number of unique client number
+length(unique(df[,"CLIENTNUM"])) # total rows are 10127, so there is no duplicates
+
+# Check for NA values in column
+nrow(df[df$Avg_Utilization_Ratio == "NA",])
+# need more of these!!!!!!!!!!
+```
+```{r outlier}
+cols <- colnames(df)
+cols <- cols[-1]
+par(mfrow=c(4,5))
+for (i in cols){
+    plot <- ggplot(df, aes_string(x = df$CLIENTNUM, y = i)) +
+    geom_point()
+    print(plot)
+}
+
+# remove outlier
+df1 <- df[!(df$Customer_Age %in% boxplot(df$Customer_Age)$out),]
+df1 <- df[!(df$Total_Amt_Chng_Q4_Q1 %in% boxplot(df$Total_Amt_Chng_Q4_Q1)$out),]
+df1 <- df[!(df$Total_Ct_Chng_Q4_Q1 %in% boxplot(df$Total_Ct_Chng_Q4_Q1)$out),]
+
+#attach(df)
+#par(mfrow=c(2,7))
+#scatter1 <- plot(CLIENTNUM, Customer_Age)
+#scatter2 <- plot(CLIENTNUM, Dependent_count)
+#scatter3 <- plot(CLIENTNUM, Months_on_book)
+#scatter4 <- plot(CLIENTNUM, Total_Relationship_Count)
+#scatter5 <- plot(CLIENTNUM, Months_Inactive_12_mon)
+#scatter6 <- plot(CLIENTNUM, Contacts_Count_12_mon)
+#scatter7 <- plot(CLIENTNUM, Credit_Limit)
+#scatter8 <- plot(CLIENTNUM, Total_Revolving_Bal)
+#scatter9 <- plot(CLIENTNUM, Avg_Open_To_Buy)
+#scatter10 <- plot(CLIENTNUM, Total_Amt_Chng_Q4_Q1)
+#scatter11 <- plot(CLIENTNUM, Total_Trans_Amt)
+#scatter12 <- plot(CLIENTNUM, Total_Trans_Ct)
+#scatter13 <- plot(CLIENTNUM, Total_Ct_Chng_Q4_Q1)
+#scatter14 <- plot(CLIENTNUM, Avg_Utilization_Ratio)
+```
+
+```{r remove}
+cols <- colnames(df1)
+cols <- cols[-1]
+par(mfrow=c(4,5))
+for (i in cols){
+    plot <- ggplot(df1, aes_string(x = df1$CLIENTNUM, y = i)) +
+    geom_point()
+    print(plot)
+}
+
+#par(mfrow=c(2,7))
+#attach(df1)
+#scatter1 <- plot(CLIENTNUM, Customer_Age)
+#scatter2 <- plot(CLIENTNUM, Dependent_count)
+#scatter3 <- plot(CLIENTNUM, Months_on_book)
+#scatter4 <- plot(CLIENTNUM, Total_Relationship_Count)
+#scatter5 <- plot(CLIENTNUM, Months_Inactive_12_mon)
+#scatter6 <- plot(CLIENTNUM, Contacts_Count_12_mon)
+#scatter7 <- plot(CLIENTNUM, Credit_Limit)
+#scatter8 <- plot(CLIENTNUM, Total_Revolving_Bal)
+#scatter9 <- plot(CLIENTNUM, Avg_Open_To_Buy)
+#scatter10 <- plot(CLIENTNUM, Total_Amt_Chng_Q4_Q1)
+#scatter11 <- plot(CLIENTNUM, Total_Trans_Amt)
+#scatter12 <- plot(CLIENTNUM, Total_Trans_Ct)
+#scatter13 <- plot(CLIENTNUM, Total_Ct_Chng_Q4_Q1)
+#scatter14 <- plot(CLIENTNUM, Avg_Utilization_Ratio)
+
+```
+
+```{r dddd, include=FALSE}
+#boxplot showing outliers
+par(mfrow=c(2,7))
+boxplot(df$Customer_Age, ylab = "Customer_Age")
+boxplot(df$Dependent_count, ylab = "Dependent_count")
+boxplot(df$Months_on_book, ylab = "Months_on_book")
+boxplot(df$Total_Relationship_Count, ylab = "Total_Relationship_Count")
+boxplot(df$Months_Inactive_12_mon, ylab = "Months_Inactive_12_mon")
+boxplot(df$Contacts_Count_12_mon, ylab = "Contacts_Count_12_mon")
+boxplot(df$Credit_Limit, ylab = "Credit_Limit")
+boxplot(df$Total_Revolving_Bal, ylab = "Total_Revolving_Bal")
+boxplot(df$Avg_Open_To_Buy, ylab = "Avg_Open_To_Buy")
+boxplot(df$Total_Amt_Chng_Q4_Q1, ylab = "Total_Amt_Chng_Q4_Q1")
+boxplot(df$Total_Trans_Amt, ylab = "Total_Trans_Amt")
+boxplot(df$Total_Trans_Ct, ylab = "Total_Trans_Ct")
+boxplot(df$Total_Ct_Chng_Q4_Q1, ylab = "Total_Ct_Chng_Q4_Q1")
+boxplot(df$Avg_Utilization_Ratio, ylab = "Avg_Utilization_Ratio")
+
+# remove outliers
+#df1 <- df[!(df$Customer_Age %in% boxplot(df$Customer_Age)$out),]
+
+outlier <- boxplot(df$Customer_Age)$out
+df1 <- df[!(df$Customer_Age %in% outlier),]
+outlier <- boxplot(df$Months_on_book)$out
+df1 <- df[!(df$Months_on_book %in% outlier),]
+outlier <- boxplot(df$Months_Inactive_12_mon)$out
+df1 <- df[!(df$Months_Inactive_12_mon %in% outlier),]
+outlier <- boxplot(df$Contacts_Count_12_mon)$out
+df1 <- df[!(df$Contacts_Count_12_mon %in% outlier),]
+outlier <- boxplot(df$Credit_Limit)$out
+df1 <- df[!(df$Credit_Limit %in% outlier),]
+outlier <- boxplot(df$Avg_Open_To_Buy)$out
+df1 <- df[!(df$Avg_Open_To_Buy %in% outlier),]
+outlier <- boxplot(df$Total_Amt_Chng_Q4_Q1)$out
+df1 <- df[!(df$Total_Amt_Chng_Q4_Q1 %in% outlier),]
+outlier <- boxplot(df$Total_Trans_Amt)$out
+df1 <- df[!(df$Total_Trans_Amt %in% outlier),]
+outlier <- boxplot(df$Total_Trans_Ct)$out
+df1 <- df[!(df$Total_Trans_Ct %in% outlier),]
+outlier <- boxplot(df$Total_Ct_Chng_Q4_Q1)$out
+df1 <- df[!(df$Total_Ct_Chng_Q4_Q1 %in% outlier),]
+
+dev.new()
+nrow(df1)
+par(mfrow=c(2,7))
+boxplot(df1$Customer_Age, ylab = "Customer_Age")
+boxplot(df1$Dependent_count, ylab = "Dependent_count")
+boxplot(df1$Months_on_book, ylab = "Months_on_book")
+boxplot(df1$Total_Relationship_Count, ylab = "Total_Relationship_Count")
+boxplot(df1$Months_Inactive_12_mon, ylab = "Months_Inactive_12_mon")
+boxplot(df1$Contacts_Count_12_mon, ylab = "Contacts_Count_12_mon")
+boxplot(df1$Credit_Limit, ylab = "Credit_Limit")
+boxplot(df1$Total_Revolving_Bal, ylab = "Total_Revolving_Bal")
+boxplot(df1$Avg_Open_To_Buy, ylab = "Avg_Open_To_Buy")
+boxplot(df1$Total_Amt_Chng_Q4_Q1, ylab = "Total_Amt_Chng_Q4_Q1")
+boxplot(df1$Total_Trans_Amt, ylab = "Total_Trans_Amt")
+boxplot(df1$Total_Trans_Ct, ylab = "Total_Trans_Ct")
+boxplot(df$Total_Ct_Chng_Q4_Q1, ylab = "Total_Ct_Chng_Q4_Q1")
+boxplot(df1$Avg_Utilization_Ratio, ylab = "Avg_Utilization_Ratio")
+
+#https://stackoverflow.com/questions/49044753/scale-kable-table-to-fit-page-width
+#kable(head(df,5), format = "latex") %>%
+#  kable_styling(latex_options = "scale_down")
+#dt <- df[1:10,]
+#dt <- dt %>%
+#  kbl() %>%
+#  kable_styling(latex_options = "scale_down") 
+#dt
+```
+
+### Binning
+Next step would be 'Binning' continuous variables into specific groups.
+need some transformation before analysis
+
+#### Age
+Categorize age into 6 groups
+```{r age, echo=TRUE}
+min(df1$Customer_Age)
+max(df1$Customer_Age)
+age_labels <- c("20-29","30-39","40-49","50-59","60-69","70+")
+df2 <- df1 %>%
+  mutate(Age = cut(Customer_Age,
+                   breaks = c(20,30,40,50,60,70,80), 
+                   right = F, 
+                   labels = age_labels)) 
+
+#check the age binning by looking at randomly chosen data subset
+age_check <- df2 %>%
+  select(c(Customer_Age,Age)) %>%
+  sample_n(10)
+
+age_check
+
+#remove continuous age value column
+df2 <- df2 %>%
+  relocate(Age, .after = Customer_Age) %>%
+  select(-Customer_Age)
+
+df2[1:5,]
+```
+
+#### Number of Dependents
+Categorize number of dependent into 4 groups
+```{r dependent, echo=TRUE}
+min(df2$Dependent_count)
+max(df2$Dependent_count)
+dependent_labels <- c("0","1-2","3-4","5+")
+df2 <- df2 %>%
+  mutate(Dependent_Count = cut(Dependent_count,
+                               breaks = c(0,1,3,5,10), 
+                               right = F, 
+                               labels = dependent_labels)) 
+
+#check the dependent count binning by looking at randomly chosen data subset
+dependent_check <- df2 %>%
+  select(c(Dependent_count,Dependent_Count)) %>%
+  sample_n(10)
+
+dependent_check
+
+#remove continuous dependent count value column
+df2 <- df2 %>%
+  relocate(Dependent_Count, .after = Dependent_count) %>%
+  select(-Dependent_count)
+df2[1:5,]
+```
+
+## Create Tables for Analysis
+
+examine groups of people/etc.. by comparing quantitative values
+```{r na, echo=TRUE}
+# Check for NA values in column
+#nrow(df[df$Avg_Utilization_Ratio == "NA",])
+```
+
+#### Gender and Age
+dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+```{r genderage, echo=TRUE}
+#group by biography info
+#group by gender and age for utilization ratio comparison
+summary <- df2 %>%
+  group_by(Gender, Age) %>%
+  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio))
+kable(summary)
+```
+
+#### Marital status
+dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+```{r married, echo=TRUE}
+#group by family info
+#group by marital status for multiple comparisons
+summary2 <- df2 %>%
+  group_by(Marital_Status) %>%
+  summarise(mean_inactive_months_count = mean(Months_Inactive_12_mon),
+            mean_util_ratio = mean(Avg_Utilization_Ratio),
+            mean_trans_count = mean(Total_Trans_Ct))
+kable(summary2)
+#married who has the highest utilization ratio are least likely to be inactive for 12 months
+```
+
+#### Dependents
+dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+```{r dependents, echo=TRUE}
+#group by number of dependents
+summary3 <- df2 %>%
+  group_by(Dependent_Count) %>%
+  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio), 
+            mean_trans_count = mean(Total_Trans_Ct),
+            mean_revolving_balance = mean(Total_Revolving_Bal))
+kable(summary3)
+```
+
+#### Card Class
+dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+```{r card, echo=TRUE}
+#group by card info
+#calculated revolving balance percentage for better comparison
+summary4 <- df2 %>%
+  group_by(Card_Category) %>%
+  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio),
+            mean_credit_limit = mean(Credit_Limit), 
+            mean_revolving_balance = mean(Total_Revolving_Bal),
+            revolving_balance_perc = (mean_revolving_balance/mean_credit_limit)*100) %>%
+    arrange(match(Card_Category, c("Blue","Silver","Platinum","Gold")))
+kable(summary4)
+```
+
+#### Education Level
+dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+```{r education, echo=TRUE}
+#group by education level for comparison of credit limit and revolving balance
+summary5 <- df2 %>%
+  group_by(Education_Level) %>%
+  summarise(mean_credit_limit = mean(Credit_Limit), mean_revolving_balance = mean(Total_Revolving_Bal)) %>%
+  arrange(match(Education_Level, c("Doctorate","Post-Graduate","Graduate","College",
+                                   "High School","Uneducated","Unknown")))
+kable(summary5)
+```
+
+<br><br>
+
+
