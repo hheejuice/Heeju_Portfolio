@@ -387,6 +387,36 @@ sapply(train, function(x) sum(is.na(x) | x == 0 | x == ""))
 
 ### Visualization 
 
+#### Gender
+
+```r
+# pie chart for gender
+sex <- train %>%
+  filter(!(gender == "")) %>% # remove blank values from 'gender'
+  group_by(gender) %>%
+  summarise(percent = n()/nrow(.) * 100)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+pie <- ggplot(sex, aes(x = "", y = percent, fill = reorder(gender,percent))) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  geom_text(aes(x = 1.58, label = paste0(round(percent,1),"%")),
+            position = position_stack(vjust = .5), size = 2.3) +
+  coord_polar("y", start = 0) +
+  labs(fill = "Gender") +
+  guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
+pie
+```
+
+![](HR-Analytics_files/figure-html/gender-1.png)<!-- -->
+여자보다 남자 비율이 월등히 높음.
+실제를 반영한 것일 수도 있지만 그냥 데이터가 imbalanced한 것일 수도 있음을
+생각해야함
+
 #### Major
 
 ```r
@@ -402,11 +432,13 @@ major <- train %>%
 ```
 
 ```r
-pie <- ggplot(major, aes(x = "", y = percent, fill = major_discipline)) +
+pie <- ggplot(major, aes(x = "", y = percent, fill = reorder(major_discipline, percent))) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.58, label = paste0(round(percent,1),"%")),
-            position = position_stack(vjust = .5), size = 2.3) +
-  coord_polar("y", start = 0)
+            position = position_stack(vjust = .5), size = 1.85) +
+  coord_polar("y", start = 0) +
+  labs(fill = "Major Discipline") +
+  guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
 pie
 ```
 
@@ -427,11 +459,13 @@ education <- train %>%
 ```
 
 ```r
-pie <- ggplot(education, aes(x = "", y = percent, fill = education_level)) +
+pie <- ggplot(education, aes(x = "", y = percent, fill = reorder(education_level,percent))) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
             position = position_stack(vjust = .5), size = 2.3) +
-  coord_polar("y", start = 0)
+  coord_polar("y", start = 0) +
+  labs(fill = "Education Level") +
+  guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
 pie
 ```
 
@@ -449,14 +483,25 @@ pie
 #### Experience
 
 ```r
-my_order <- c('<1','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15',
-           '16','17','18','19','20','>20')
+#my_order <- c('<1','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15',
+#           '16','17','18','19','20','>20')
+
+#exp <- train %>%
+#  filter(!(experience == "")) %>%
+#  #mutate(experience = ifelse(experience == "<1", "0",experience)) %>%
+#  #mutate(experience = as.numeric(experience)) %>%
+#  group_by(experience) %>%
+#  summarise(count = n()) %>%
+#  arrange(match(experience, my_order))
 
 exp <- train %>%
   filter(!(experience == "")) %>%
+  filter(!experience == ">20") %>% # remove >20 experience
+  #filter(!experience == "<1") %>% # remove <1 experience
+  mutate(experience = ifelse(experience == "<1", "0",experience)) %>% # treat <1 experience as 0 experience
+  mutate(experience = as.numeric(experience)) %>%
   group_by(experience) %>%
-  summarise(count = n()) %>%
-  arrange(match(experience, my_order))
+  summarise(count = n())
 ```
 
 ```
@@ -472,8 +517,9 @@ bar
 
 ![](HR-Analytics_files/figure-html/exp-1.png)<!-- -->
 
+#### Company Size
+
 ```r
-#---------
 my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
 
 size <- train %>%
@@ -494,11 +540,68 @@ bar <- ggplot(size, aes(x = company_size, y = count)) +
 bar
 ```
 
-![](HR-Analytics_files/figure-html/exp-2.png)<!-- -->
+![](HR-Analytics_files/figure-html/size-1.png)<!-- -->
+
+```r
+#-------
+my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
+
+#not looking for job change (target=0)
+size <- train %>%
+  filter(target == "0") %>%
+  filter(!company_size == "") %>%
+  group_by(company_size) %>%
+  summarise(percent = n()/nrow(.) * 100)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+pie <- ggplot(size, aes(x = "", y = percent, fill = reorder(company_size,percent))) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
+            position = position_stack(vjust = .5), size = 2.3) +
+  coord_polar("y", start = 0) +
+  labs(fill = "Company Sizel") +
+  guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
+pie
+```
+
+![](HR-Analytics_files/figure-html/size-2.png)<!-- -->
+
+```r
+# looking for job change (target=1)
+size <- train %>%
+  filter(target == "1") %>%
+  filter(!company_size == "") %>%
+  group_by(company_size) %>%
+  summarise(percent = n()/nrow(.) * 100)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+pie <- ggplot(size, aes(x = "", y = percent, fill = reorder(company_size,percent))) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
+            position = position_stack(vjust = .5), size = 2.3) +
+  coord_polar("y", start = 0) +
+  labs(fill = "Company Sizel") +
+  guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
+pie
+```
+
+![](HR-Analytics_files/figure-html/size-3.png)<!-- -->
+
 
 #### Company Type
 
 ```r
+#total number
 company <- train %>%
   filter(!company_type == "") %>%
   group_by(company_type) %>%
@@ -518,5 +621,96 @@ freq
 ```
 
 ![](HR-Analytics_files/figure-html/company-1.png)<!-- -->
+
+```r
+#not looking for job change (target=0)
+nochange <- train %>%
+  filter(target == "0") %>%
+  filter(!company_type == "") %>%
+  group_by(company_type) %>%
+  summarise(count = n(), percent = n()/nrow(.) * 100)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+freq <- ggplot(nochange, aes(fct_rev(fct_reorder(company_type, count)),count)) +
+  geom_bar(fill = "#0073C2FF", stat = "identity") +
+  geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
+  labs(x = "Company Type", title = "Not Looking for Job Change")
+freq
+```
+
+![](HR-Analytics_files/figure-html/company-2.png)<!-- -->
+
+```r
+#looking for job change (target=1)
+change <- train %>%
+  filter(target == "1") %>%
+  filter(!company_type == "") %>%
+  group_by(company_type) %>%
+  summarise(count = n(), percent = n()/nrow(.) * 100)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+freq <- ggplot(change, aes(fct_rev(fct_reorder(company_type, count)),count)) +
+  geom_bar(fill = "#0073C2FF", stat = "identity") +
+  geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
+  labs(x = "Company Type", title = "Looking for Job Change")
+freq
+```
+
+![](HR-Analytics_files/figure-html/company-3.png)<!-- -->
+
+
+
+```r
+density <- train %>%
+  filter(!company_type == "") %>%
+  filter(!training_hours == "")
+
+plot <- ggplot(density, aes(x = training_hours)) +
+  geom_density(aes(color = company_type))
+plot
+```
+
+![](HR-Analytics_files/figure-html/klnl-1.png)<!-- -->
+
+```r
+#-------
+density <- train %>%
+  filter(!company_type == "") %>%
+  filter(!training_hours == "") %>%
+  mutate(target = ifelse(target == "0", "Not Looking for Job Change","Looking for Job Change"))
+
+plot <- ggplot(density, aes(x = training_hours)) +
+  geom_density(aes(color = target))
+plot
+```
+
+![](HR-Analytics_files/figure-html/klnl-2.png)<!-- -->
+
+```r
+#-------
+#looking for/not looking for
+density <- train %>%
+  filter(!experience == "") %>%
+  filter(!experience == ">20") %>%
+  filter(!experience == "<1") %>%
+  mutate(experience = as.numeric(experience)) %>%
+  mutate(target = ifelse(target == "0", "Not Looking for Job Change","Looking for Job Change"))
+
+plot <- ggplot(density, aes(x = experience)) +
+  geom_density(aes(color = target))
+plot
+```
+
+![](HR-Analytics_files/figure-html/klnl-3.png)<!-- -->
 
 
