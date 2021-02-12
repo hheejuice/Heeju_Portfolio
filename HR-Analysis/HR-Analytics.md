@@ -4,12 +4,24 @@ output:
   html_document:
     keep_md: true
 ---
+### Loading Packages
 
 
+```r
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+#load required packages
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(Hmisc)
+library(knitr)
+library(kableExtra)
+library(scales)
+```
 
-## Data PreProcessing
+### Data PreProcessing
 
-### Basic Setup
+#### Basic Data Information
 
 
 ```r
@@ -17,6 +29,7 @@ output:
 test <- read.csv("aug_test.csv", stringsAsFactors = F)
 train <- read.csv("aug_train.csv", stringsAsFactors = F)
 
+#column names
 colnames(test)
 ```
 
@@ -41,6 +54,7 @@ colnames(train)
 ```
 
 ```r
+#summary statistics
 summary_test <- describe(test)
 summary_test
 ```
@@ -332,6 +346,8 @@ summary_train
 ```
 
 ```r
+#check for duplicate enrollee id
+#data has duplicates if number of unique value = number of observations
 length(unique(test[,"enrollee_id"])) # no duplicates
 ```
 
@@ -348,6 +364,7 @@ length(unique(train[,"enrollee_id"])) # no duplicates
 ```
 
 ```r
+#number of NA, 0, missing values for each column
 sapply(test, function(x) sum(is.na(x) | x == 0 | x == ""))
 ```
 
@@ -385,23 +402,18 @@ sapply(train, function(x) sum(is.na(x) | x == 0 | x == ""))
 #test1 <- test1[!(test1$Customer_Age %in% boxplot(df$Customer_Age)$out),]
 ```
 
-### Visualization 
+### Basic Visualization 
 
 #### Gender
 
-```r
-# pie chart for gender
-sex <- train %>%
-  filter(!(gender == "")) %>% # remove blank values from 'gender'
-  group_by(gender) %>%
-  summarise(percent = n()/nrow(.) * 100)
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
 
 ```r
+sex <- train %>% # create a dataframe called sex
+  filter(!(gender == "")) %>% # remove blank values from 'gender' column
+  group_by(gender) %>% # group by gender
+  summarise(percent = n()/nrow(.) * 100) # calculate gender ratios
+
+# create pie chart for gender
 pie <- ggplot(sex, aes(x = "", y = percent, fill = reorder(gender,percent))) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.58, label = paste0(round(percent,1),"%")),
@@ -419,26 +431,22 @@ pie
 
 #### Major
 
+
 ```r
 # pie chart for major discipline
 major <- train %>%
   filter(!(major_discipline == "")) %>% # remove blank values from 'major_discipline'
   group_by(major_discipline) %>%
   summarise(percent = n()/nrow(.) * 100)
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 pie <- ggplot(major, aes(x = "", y = percent, fill = reorder(major_discipline, percent))) +
+  # pies in order of largest percentage to smallest percentage
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.58, label = paste0(round(percent,1),"%")),
-            position = position_stack(vjust = .5), size = 1.85) +
+            position = position_stack(vjust = .5), size = 1.85) + # percentage labels
   coord_polar("y", start = 0) +
   labs(fill = "Major Discipline") +
-  guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
+  guides(fill = guide_legend(reverse = TRUE))
 pie
 ```
 
@@ -452,14 +460,9 @@ education <- train %>%
   filter(!(education_level == "")) %>% # remove blank values from 'major_discipline'
   group_by(education_level) %>%
   summarise(percent = n()/nrow(.) * 100)
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 pie <- ggplot(education, aes(x = "", y = percent, fill = reorder(education_level,percent))) +
+  # pies in order of largest percentage to smallest percentage
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
             position = position_stack(vjust = .5), size = 2.3) +
@@ -480,7 +483,7 @@ pie
 #pie
 ```
 
-#### Experience
+#### Years of Experience
 
 ```r
 #my_order <- c('<1','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15',
@@ -495,44 +498,46 @@ pie
 #  arrange(match(experience, my_order))
 
 exp <- train %>%
-  filter(!(experience == "")) %>%
-  filter(!experience == ">20") %>% # remove >20 experience
-  #filter(!experience == "<1") %>% # remove <1 experience
+  filter(!(experience == "")) %>% # remove missing values from 'experience' column
+  filter(!experience == ">20") %>% # remove >20 years of experience
+  #filter(!experience == "<1") %>% # remove <1 years of experience
   mutate(experience = ifelse(experience == "<1", "0",experience)) %>% # treat <1 experience as 0 experience
-  mutate(experience = as.numeric(experience)) %>%
+  mutate(experience = as.numeric(experience)) %>% # convert to numeric variable
   group_by(experience) %>%
-  summarise(count = n())
-```
+  summarise(count = n()) # count for each 'years of experience'
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
+# create a bar graph for years of experience distribution
 bar <- ggplot(exp, aes(x = experience, y = count)) +
   geom_bar(fill = "#0073C2FF", stat = "identity") +
-  geom_text(aes(label = count), vjust = -0.3)
+  geom_text(aes(label = count), vjust = -0.3) # count labels at the top of each bar
 bar
 ```
 
 ![](HR-Analytics_files/figure-html/exp-1.png)<!-- -->
 
+peaks around 5, 10, and 15 years of experience
+people tend to leave their company at that period of time?
+
 #### Distribution of Training Hours by Company Type 
 
 ```r
 density <- train %>%
-  filter(!company_type == "") %>%
-  filter(!training_hours == "")
+  filter(!company_type == "") %>% # remove missing values from 'company_type'
+  filter(!training_hours == "") # remove missing values from 'training_hours"
 
+# create a density plot of training hour distribution by company type
 plot <- ggplot(density, aes(x = training_hours)) +
   geom_density(aes(color = company_type))
 plot
 ```
 
-![](HR-Analytics_files/figure-html/type-1.png)<!-- -->
+![](HR-Analytics_files/figure-html/comptype-1.png)<!-- -->
 
-### Looking for Company Change or not
+### Visualization for Comparison
+### (Looking for Company Change vs Those who are not)
 #### Company Size
+Is there any relationship between company size and willingness to leave company?
+Are data sciensts more likely to be willing to change company if they are working for small company?
 
 ```r
 #my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
@@ -549,25 +554,20 @@ plot
 #bar
 
 #-------
-#not looking for job change (target=0)
+# looking for job change (target=1)
 size <- train %>%
-  filter(target == "0") %>%
+  filter(target == "1") %>% # filter data for people looking for job change
   filter(!company_size == "") %>%
   group_by(company_size) %>%
   summarise(percent = n()/nrow(.) * 100)
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 pie <- ggplot(size, aes(x = "", y = percent, fill = reorder(company_size,percent))) +
+  # from largest percentage to smallest percentage
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
             position = position_stack(vjust = .5), size = 2.3) +
   coord_polar("y", start = 0) +
-  labs(fill = "Company Sizel") +
+  labs(fill = "Company Size", title = "Looking for Job Change") +
   guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
 pie
 ```
@@ -575,31 +575,24 @@ pie
 ![](HR-Analytics_files/figure-html/size-1.png)<!-- -->
 
 ```r
-# looking for job change (target=1)
+# not looking for job change (target=0)
 size <- train %>%
-  filter(target == "1") %>%
-  filter(!company_size == "") %>%
+  filter(target == "0") %>% # filter data for people not looking for job change
+  filter(!company_size == "") %>% # remove missing values
   group_by(company_size) %>%
-  summarise(percent = n()/nrow(.) * 100)
-```
+  summarise(percent = n()/nrow(.) * 100) # calculate percentage
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 pie <- ggplot(size, aes(x = "", y = percent, fill = reorder(company_size,percent))) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   geom_text(aes(x = 1.6, label = paste0(round(percent,1),"%")),
             position = position_stack(vjust = .5), size = 2.3) +
   coord_polar("y", start = 0) +
-  labs(fill = "Company Sizel") +
+  labs(fill = "Company Size") +
   guides(fill = guide_legend(reverse = TRUE)) # reverse order of legend
 pie
 ```
 
 ![](HR-Analytics_files/figure-html/size-2.png)<!-- -->
-
 
 #### Company Type
 
@@ -609,13 +602,7 @@ company <- train %>%
   filter(!company_type == "") %>%
   group_by(company_type) %>%
   summarise(count = n())
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 freq <- ggplot(company, aes(fct_rev(fct_reorder(company_type, count)),count)) +
   geom_bar(fill = "#0073C2FF", stat = "identity") +
   geom_text(aes(label = count), vjust = -0.3) +
@@ -623,30 +610,7 @@ freq <- ggplot(company, aes(fct_rev(fct_reorder(company_type, count)),count)) +
 freq
 ```
 
-![](HR-Analytics_files/figure-html/company-1.png)<!-- -->
-
-```r
-#not looking for job change (target=0)
-nochange <- train %>%
-  filter(target == "0") %>%
-  filter(!company_type == "") %>%
-  group_by(company_type) %>%
-  summarise(count = n(), percent = n()/nrow(.) * 100)
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
-freq <- ggplot(nochange, aes(fct_rev(fct_reorder(company_type, count)),count)) +
-  geom_bar(fill = "#0073C2FF", stat = "identity") +
-  geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
-  labs(x = "Company Type", title = "Not Looking for Job Change")
-freq
-```
-
-![](HR-Analytics_files/figure-html/company-2.png)<!-- -->
+![](HR-Analytics_files/figure-html/type-1.png)<!-- -->
 
 ```r
 #looking for job change (target=1)
@@ -655,13 +619,7 @@ change <- train %>%
   filter(!company_type == "") %>%
   group_by(company_type) %>%
   summarise(count = n(), percent = n()/nrow(.) * 100)
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 freq <- ggplot(change, aes(fct_rev(fct_reorder(company_type, count)),count)) +
   geom_bar(fill = "#0073C2FF", stat = "identity") +
   geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
@@ -669,14 +627,30 @@ freq <- ggplot(change, aes(fct_rev(fct_reorder(company_type, count)),count)) +
 freq
 ```
 
-![](HR-Analytics_files/figure-html/company-3.png)<!-- -->
+![](HR-Analytics_files/figure-html/type-2.png)<!-- -->
 
-#### Distribution of Years of Experience
+```r
+#not looking for job change (target=0)
+nochange <- train %>%
+  filter(target == "0") %>%
+  filter(!company_type == "") %>%
+  group_by(company_type) %>%
+  summarise(count = n(), percent = n()/nrow(.) * 100)
+
+freq <- ggplot(nochange, aes(fct_rev(fct_reorder(company_type, count)),count)) +
+  geom_bar(fill = "#0073C2FF", stat = "identity") +
+  geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
+  labs(x = "Company Type", title = "Not Looking for Job Change")
+freq
+```
+
+![](HR-Analytics_files/figure-html/type-3.png)<!-- -->
+#### Training Hours Distribution by groups of people
 
 ```r
 density <- train %>%
-  filter(!company_type == "") %>%
-  filter(!training_hours == "") %>%
+  filter(!company_type == "") %>% # remove missing values
+  filter(!training_hours == "") %>% # remove missing values
   mutate(target = ifelse(target == "0", "Not Looking for Job Change","Looking for Job Change"))
 
 plot <- ggplot(density, aes(x = training_hours)) +
@@ -684,23 +658,25 @@ plot <- ggplot(density, aes(x = training_hours)) +
 plot
 ```
 
-![](HR-Analytics_files/figure-html/klnl-1.png)<!-- -->
+![](HR-Analytics_files/figure-html/train-1.png)<!-- -->
+
+#### Years of Experience
 
 ```r
-#-------
-#looking for/not looking for
 density <- train %>%
-  filter(!experience == "") %>%
-  filter(!experience == ">20") %>%
-  filter(!experience == "<1") %>%
-  mutate(experience = as.numeric(experience)) %>%
+  filter(!experience == "") %>% # remove missing values
+  filter(!experience == ">20") %>% # remove >20 experience
+  filter(!experience == "<1") %>% # remove <1 experience
+  mutate(experience = as.numeric(experience)) %>% # convert to numeric variables
   mutate(target = ifelse(target == "0", "Not Looking for Job Change","Looking for Job Change"))
 
 plot <- ggplot(density, aes(x = experience)) +
-  geom_density(aes(color = target))
+  geom_density(aes(color = target)) +
+  labs(x = "Experience (years)", y = "Density", fill = "Group")
 plot
 ```
 
-![](HR-Analytics_files/figure-html/klnl-2.png)<!-- -->
+![](HR-Analytics_files/figure-html/yearexp-1.png)<!-- -->
 
+Those who are looking for job change tend to have less years of experience.
 

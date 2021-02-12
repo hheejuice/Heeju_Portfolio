@@ -5,9 +5,9 @@ output:
     keep_md: true
 ---
 
-## Loading Packages
+### Loading Packages
 
-```{r package, include=FALSE}
+```{r package, include=TRUE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #load required packages
 library(tidyverse)
@@ -18,9 +18,9 @@ library(knitr)
 library(kableExtra)
 ```
 
-## Data PreProcessing
+### Data PreProcessing
 
-### Basic Setup
+#### Basic Setup
 
 original data retrieved from Kaggle <br>
 try to understand data
@@ -310,6 +310,6 @@ summary5 <- df2 %>%
 kable(summary5)
 ```
 
-<br><br>
+
 
 

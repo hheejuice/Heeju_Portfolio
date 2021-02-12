@@ -4,9 +4,18 @@ output:
   html_document:
     keep_md: true
 ---
-## Loading Packages
+### Loading Packages
 
 
+```r
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(rworldmap)
+```
+
+### Basic Data Information
 
 
 ```r

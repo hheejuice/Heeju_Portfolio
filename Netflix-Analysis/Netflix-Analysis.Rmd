@@ -4,15 +4,17 @@ output:
   html_document:
     keep_md: true
 ---
-## Loading Packages
+### Loading Packages
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(rworldmap)
 ```
+
+### Basic Data Information
 
 ```{r data}
 df <- read.csv("netflix_titles.csv", stringsAsFactors = F)

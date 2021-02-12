@@ -375,8 +375,16 @@ summary {
 </div>
 
 
-<div id="loading-packages" class="section level2">
-<h2>Loading Packages</h2>
+<div id="loading-packages" class="section level3">
+<h3>Loading Packages</h3>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(rworldmap)</code></pre>
+</div>
+<div id="basic-data-information" class="section level3">
+<h3>Basic Data Information</h3>
 <pre class="r"><code>df &lt;- read.csv(&quot;netflix_titles.csv&quot;, stringsAsFactors = F)
 
 summary(df)</code></pre>
