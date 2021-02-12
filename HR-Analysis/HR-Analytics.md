@@ -517,35 +517,38 @@ bar
 
 ![](HR-Analytics_files/figure-html/exp-1.png)<!-- -->
 
+#### Distribution of Training Hours by Company Type 
+
+```r
+density <- train %>%
+  filter(!company_type == "") %>%
+  filter(!training_hours == "")
+
+plot <- ggplot(density, aes(x = training_hours)) +
+  geom_density(aes(color = company_type))
+plot
+```
+
+![](HR-Analytics_files/figure-html/type-1.png)<!-- -->
+
+### Looking for Company Change or not
 #### Company Size
 
 ```r
-my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
+#my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
 
-size <- train %>%
-  filter(!(company_size == "")) %>%
-  group_by(company_size) %>%
-  summarise(count = n()) %>%
-  arrange(match(company_size, my_order))
-```
+#size <- train %>%
+#  filter(!(company_size == "")) %>%
+#  group_by(company_size) %>%
+#  summarise(count = n()) %>%
+#  arrange(match(company_size, my_order))
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
+#bar <- ggplot(size, aes(x = company_size, y = count)) +
+#  geom_bar(fill = "#0073C2FF", stat = "identity") +
+#  geom_text(aes(label = count), vjust = -0.3)
+#bar
 
-```r
-bar <- ggplot(size, aes(x = company_size, y = count)) +
-  geom_bar(fill = "#0073C2FF", stat = "identity") +
-  geom_text(aes(label = count), vjust = -0.3)
-bar
-```
-
-![](HR-Analytics_files/figure-html/size-1.png)<!-- -->
-
-```r
 #-------
-my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
-
 #not looking for job change (target=0)
 size <- train %>%
   filter(target == "0") %>%
@@ -569,7 +572,7 @@ pie <- ggplot(size, aes(x = "", y = percent, fill = reorder(company_size,percent
 pie
 ```
 
-![](HR-Analytics_files/figure-html/size-2.png)<!-- -->
+![](HR-Analytics_files/figure-html/size-1.png)<!-- -->
 
 ```r
 # looking for job change (target=1)
@@ -595,7 +598,7 @@ pie <- ggplot(size, aes(x = "", y = percent, fill = reorder(company_size,percent
 pie
 ```
 
-![](HR-Analytics_files/figure-html/size-3.png)<!-- -->
+![](HR-Analytics_files/figure-html/size-2.png)<!-- -->
 
 
 #### Company Type
@@ -668,22 +671,9 @@ freq
 
 ![](HR-Analytics_files/figure-html/company-3.png)<!-- -->
 
-
-
-```r
-density <- train %>%
-  filter(!company_type == "") %>%
-  filter(!training_hours == "")
-
-plot <- ggplot(density, aes(x = training_hours)) +
-  geom_density(aes(color = company_type))
-plot
-```
-
-![](HR-Analytics_files/figure-html/klnl-1.png)<!-- -->
+#### Distribution of Years of Experience
 
 ```r
-#-------
 density <- train %>%
   filter(!company_type == "") %>%
   filter(!training_hours == "") %>%
@@ -694,7 +684,7 @@ plot <- ggplot(density, aes(x = training_hours)) +
 plot
 ```
 
-![](HR-Analytics_files/figure-html/klnl-2.png)<!-- -->
+![](HR-Analytics_files/figure-html/klnl-1.png)<!-- -->
 
 ```r
 #-------
@@ -711,6 +701,6 @@ plot <- ggplot(density, aes(x = experience)) +
 plot
 ```
 
-![](HR-Analytics_files/figure-html/klnl-3.png)<!-- -->
+![](HR-Analytics_files/figure-html/klnl-2.png)<!-- -->
 
 

@@ -4,6 +4,7 @@ output:
   html_document:
     keep_md: true
 ---
+## Loading Packages
 
 ```{r package, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -139,6 +140,18 @@ bar <- ggplot(exp, aes(x = experience, y = count)) +
 bar
 ```
 
+#### Distribution of Training Hours by Company Type 
+```{r type, include=T}
+density <- train %>%
+  filter(!company_type == "") %>%
+  filter(!training_hours == "")
+
+plot <- ggplot(density, aes(x = training_hours)) +
+  geom_density(aes(color = company_type))
+plot
+```
+
+### Looking for Company Change or not
 #### Company Size
 ```{r size, include=T}
 #my_order <- c('<10','10/49','50-99','100-500','500-999','1000-4999','5000-9999','10000+')
@@ -230,17 +243,8 @@ freq <- ggplot(change, aes(fct_rev(fct_reorder(company_type, count)),count)) +
 freq
 ```
 
-
-```{r klnl}
-density <- train %>%
-  filter(!company_type == "") %>%
-  filter(!training_hours == "")
-
-plot <- ggplot(density, aes(x = training_hours)) +
-  geom_density(aes(color = company_type))
-plot
-
-#-------
+#### Distribution of Years of Experience
+```{r klnl, include=T}
 density <- train %>%
   filter(!company_type == "") %>%
   filter(!training_hours == "") %>%

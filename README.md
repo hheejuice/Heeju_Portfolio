@@ -4,7 +4,8 @@
 
 ### Contents
 * #### Data Analysis and Visualization
-  * [Customer Card Customer Analysis](creditcardcustomer/Credit-Card-Customers.md): dfsdfd
+  * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfd
+  * [Customer Card Customer Analysis](Credit-card-customer/Credit-Card-Customers.md): dfsdfd
 
 * #### Machine Learning
   * [project using ML Logistic Regression](https://hheejuice.github.io/Heeju_Portfolio/): ndflnfln
