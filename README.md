@@ -4,6 +4,7 @@
 
 ### Contents
 * #### Data Analysis and Visualization
+  * [Netflix Analysis](Netflix-Analysis/Netflix-Analysis.md): dfsdfd
   * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfd
   * [Customer Card Customer Analysis](Credit-card-customer/Credit-Card-Customers.md): dfsdfd
 
