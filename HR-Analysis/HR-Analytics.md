@@ -347,7 +347,7 @@ summary_train
 
 ```r
 #check for duplicate enrollee id
-#data has duplicates if number of unique value = number of observations
+#data has no duplicates if number of unique value = number of observations
 length(unique(test[,"enrollee_id"])) # no duplicates
 ```
 

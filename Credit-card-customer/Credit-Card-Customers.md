@@ -5,13 +5,23 @@ output:
     keep_md: true
 ---
 
-## Loading Packages
+### Loading Packages
 
 
+```r
+knitr::opts_chunk$set(echo = TRUE)
+#load required packages
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(Hmisc)
+library(knitr)
+library(kableExtra)
+```
 
-## Data PreProcessing
+### Data PreProcessing
 
-### Basic Setup
+#### Basic Setup
 
 original data retrieved from Kaggle <br>
 try to understand data
@@ -273,6 +283,7 @@ nrow(df[df$Avg_Utilization_Ratio == "NA",])
 # need more of these!!!!!!!!!!
 ```
 
+
 ```r
 cols <- colnames(df)
 cols <- cols[-1]
@@ -388,16 +399,16 @@ age_check
 
 ```
 ##    Customer_Age   Age
-## 1            52 50-59
-## 2            43 40-49
-## 3            48 40-49
-## 4            37 30-39
-## 5            56 50-59
-## 6            54 50-59
-## 7            53 50-59
-## 8            50 50-59
-## 9            51 50-59
-## 10           56 50-59
+## 1            59 50-59
+## 2            46 40-49
+## 3            46 40-49
+## 4            47 40-49
+## 5            52 50-59
+## 6            32 30-39
+## 7            52 50-59
+## 8            34 30-39
+## 9            40 40-49
+## 10           31 30-39
 ```
 
 ```r
@@ -479,16 +490,16 @@ dependent_check
 
 ```
 ##    Dependent_count Dependent_Count
-## 1                2             1-2
-## 2                2             1-2
-## 3                0               0
-## 4                4             3-4
-## 5                3             3-4
-## 6                4             3-4
+## 1                3             3-4
+## 2                4             3-4
+## 3                3             3-4
+## 4                3             3-4
+## 5                2             1-2
+## 6                1             1-2
 ## 7                1             1-2
-## 8                5              5+
-## 9                3             3-4
-## 10               4             3-4
+## 8                3             3-4
+## 9                5              5+
+## 10               3             3-4
 ```
 
 ```r
@@ -878,6 +889,6 @@ kable(summary5)
 </tbody>
 </table>
 
-<br><br>
+
 
 

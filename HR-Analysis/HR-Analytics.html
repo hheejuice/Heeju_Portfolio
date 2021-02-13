@@ -689,7 +689,7 @@ summary_train</code></pre>
 ## 
 ## --------------------------------------------------------------------------------</code></pre>
 <pre class="r"><code>#check for duplicate enrollee id
-#data has duplicates if number of unique value = number of observations
+#data has no duplicates if number of unique value = number of observations
 length(unique(test[,&quot;enrollee_id&quot;])) # no duplicates</code></pre>
 <pre><code>## [1] 2129</code></pre>
 <pre class="r"><code>length(unique(train[,&quot;enrollee_id&quot;])) # no duplicates</code></pre>

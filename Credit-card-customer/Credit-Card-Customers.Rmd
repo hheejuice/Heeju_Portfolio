@@ -49,6 +49,7 @@ length(unique(df[,"CLIENTNUM"])) # total rows are 10127, so there is no duplicat
 nrow(df[df$Avg_Utilization_Ratio == "NA",])
 # need more of these!!!!!!!!!!
 ```
+
 ```{r outlier}
 cols <- colnames(df)
 cols <- cols[-1]
