@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(plotly)
 library(rworldmap)
 ```
 
@@ -52,7 +53,8 @@ year
 # draw a bar plot for number of contents added to Netflix by year
 bar <- ggplot(year, aes(x = date_added, y = count, fill = date_added)) +
   geom_bar(stat = "identity") +
-  geom_text(aes(label = count), vjust = -0.3)
+  geom_text(aes(label = count), vjust = -0.3) +
+  labs(x = "Year", fill = "Year", title = "Number of Contents added to Netflix by Year")
 bar
 
 # Netflix trends - movie vs TV shows
@@ -64,7 +66,8 @@ group
 
 # create bar plot for number of contents added by year by content type
 bar <- ggplot(group, aes(x = date_added, y = count, fill = type)) +
-  geom_bar(stat = "identity", position = "dodge")
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Netflix Trends by Year", x = "Year", "Type")
 bar
 ```
 
@@ -86,7 +89,7 @@ type
 bar <- ggplot(type, aes(x = type, y = count, fill = type)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = count), vjust = -0.3) +
-  labs(title = "Netflix contents by type") + # add title
+  labs(title = "Netflix contents by type", x = "Type", fill = "Type") + # add title
   theme(plot.title = element_text(hjust = 0.5)) # center title
 bar
 
@@ -132,7 +135,7 @@ bar <- movie_country %>%
   ggplot(., aes(x=reorder(country,-count), y = count)) + # bar plot most to least
   geom_bar(stat='identity') + 
   theme_classic() +
-  labs(x = "Country") +
+  labs(x = "Country", title = "Top 10 Countries by number of movies on Netflix") +
   geom_text(aes(label = count), vjust = -0.3) # add count labels
 bar
 ```
@@ -154,6 +157,53 @@ do.call(addMapLegend, c(mapParams, legendLabels="all", legendWidth=0.5))
 
 Continent-wise, Americas - North and South America - exhibits high number of Netflix movies overall.
 
+#### Number of movies by Year
+year 지날때마다 각 나라의 영화 개수
+line graph - x = year, y = count, fill = country
+
+```{r countbyyear}
+genre_country <- movie %>% 
+  mutate(listed_in = strsplit(as.character(listed_in), ", ")) %>% # separate genre by commas
+  unnest(listed_in) %>%
+  mutate(country = strsplit(as.character(country), ", ")) %>% # separate country name by commas
+  unnest(country) %>%
+  select("title","country","date_added","listed_in")
+genre_country
+
+unique(genre_country$country) # some country names still have commas
+length(unique(genre_country$country)) # number of unique country names
+unique(genre_country$listed_in) # clean; no leftover commas to be deleted
+
+genre_country <- genre_country %>%
+  mutate(country = gsub(",","",country)) # remove commas by replacing them with space
+genre_country
+
+unique(genre_country$country) # commas removed from country names
+length(unique(genre_country$country))
+
+movie_year <- genre_country %>%
+#  mutate(date_added = as.numeric(date_added)) %>%
+  filter(country == "United States" |
+           country == "India"| 
+           country == "United Kingdom"| 
+           country == "Canada"| 
+           country == "France") %>%
+  group_by(country, date_added) %>%
+  summarise(count = n())
+movie_year
+
+#bar <- ggplot(genre_5_country, aes(fill=listed_in, y=count, x=country)) + 
+#    geom_bar(position="fill", stat="identity")
+#bar
+
+chart <- ggplot(movie_year, aes(x = date_added, y = count, group = country, color = country)) +
+  geom_line() +
+  labs(x = "Year", y = "Count", fill = "Country", title = "Number of movies by Year in Top 5 Countries")
+chart <- ggplotly(chart)
+chart
+```
+
+
 #### Netflix movie genre trends by year
  장르 ('listed in' column) 별로 몇년도에 넷플에 애드 됐는지? (release year아니고 넷플 애드된 해)
  몇년도에 어떤 장르가 제일 많이 애드됐는지
@@ -162,7 +212,7 @@ Continent-wise, Americas - North and South America - exhibits high number of Net
 head(movie$listed_in,10) # each movie has multiple genres separated by commas
 
 movie_genre <- movie %>% 
-  mutate(listed_in = strsplit(as.character(listed_in), ", ")) %>% 
+  mutate(listed_in = strsplit(as.character(listed_in), ", ")) %>% # split genre column by comma
   unnest(listed_in) %>%
   select("title","date_added","listed_in")
 movie_genre
@@ -171,17 +221,20 @@ unique(movie_genre$listed_in) # all Netflix genre
 
 movie_genre <- movie_genre %>%
   group_by(date_added, listed_in) %>%
-  summarise(count = n())
+  summarise(count = n()) # count number of genres by year
 movie_genre
 
 # stacked bar chart
 bar <- ggplot(movie_genre, aes(fill=listed_in, y=count, x=date_added)) + 
-    geom_bar(position="stack", stat="identity")
-bar
+  geom_bar(position="stack", stat="identity") +
+  labs (x = "Year", fill = "Genre", title = "Genre by Year")
+bar <- ggplotly(bar)
+bar # interactive로 해서 한 장르의 시간별 변화도 관찰 가능
 
 # percent stacked bar chart
 bar <- ggplot(movie_genre, aes(fill=listed_in, y=count, x=date_added)) + 
-    geom_bar(position="fill", stat="identity")
+  geom_bar(position="fill", stat="identity") +
+  labs (x = "Year", y = "Percent", fill = "Genre", title = "Genre by Year")
 bar
 ```
 
@@ -190,48 +243,55 @@ bar
 전체적으로 시간이 지날 수록 영화의 다양성에 집중하고자 하는 양상이 드러남
 
 #### Netflix genre trends by country
-```{r genrebycountry}
-genre_country <- movie %>% 
-  mutate(listed_in = strsplit(as.character(listed_in), ", ")) %>% 
-  unnest(listed_in) %>%
-  mutate(country = strsplit(as.character(country), ", ")) %>% 
-  unnest(country) %>%
-  select("title","country","date_added","listed_in")
-genre_country
+```{r genrebycountry, include = TRUE}
 
-unique(genre_country$country) # some country names have commas
-length(unique(genre_country$country))
-unique(genre_country$listed_in) # clean
 
-genre_country <- genre_country %>%
-  mutate(country = gsub(",","",country))
-genre_country
+#넷플 영화 갯수 탑 5 나라의 장르 비율
+#genre_5_country <- genre_country %>%
+#  filter(country == "United States" |
+#           country == "India"| 
+#           country == "United Kingdom"| 
+#           country == "Canada"| 
+#           country == "France") %>%
+#  group_by(country, listed_in) %>%
+#  summarise(count = n())
 
-unique(genre_country$country) # commas removed from country names
-length(unique(genre_country$country))
-
-#모든 나라의 장르 비율
-#탑 몇나라만 뽑을수없나??? number of movies의 탑5 나라이름 골라넣었음
-genre_country <- genre_country %>%
-  filter(country == "United States" |
-           country == "India"| 
-           country == "United Kingdom"| 
-           country == "Canada"| 
-           country == "France") %>%
-  group_by(country, listed_in) %>%
-  summarise(count = n())
-
-# percent stacked bar chart
-bar <- ggplot(genre_country, aes(fill=listed_in, y=count, x=country)) + 
-    geom_bar(position="stack", stat="identity")
-bar
+#  stacked bar chart
+#bar <- ggplot(genre_5_country, aes(fill=listed_in, y=count, x=country)) + 
+#    geom_bar(position="fill", stat="identity")
+#bar
 
 # 각 나라 별 도넛 차트 for genre
 # https://homepage.divms.uiowa.edu/~luke/classes/STAT4580/catone.html
-pie <- ggplot(genre_country) +
-  geom_col(aes(x = 1, y = count, fill = listed_in), position = "fill") +
-  coord_polar(theta = "y") +
-  labs(title = "Movie Genres", fill = "Genre") +
+#pie <- ggplot(genre_5_country) +
+#  geom_col(aes(x = 1, y = count, fill = listed_in), position = "fill") +
+#  coord_polar(theta = "y") +
+#  labs(title = "Movie Genres", fill = "Genre") +
+#  facet_wrap(~ country) +
+#  theme_bw() +
+#  theme(axis.title = element_blank(), # remove axis and grid lines
+#        axis.text = element_blank(),
+#        axis.ticks = element_blank(),
+#        panel.grid.major = element_blank(),
+#        panel.grid.minor = element_blank(),
+#        panel.border = element_blank())
+
+#pie <- pie + xlim(0, 1.5)
+#pie
+
+# 영화 갯수 제일 많은 미국 한 나라의 장르 비율 도넛 차트
+genre_usa <- genre_country %>%
+  filter(country == "United States") %>%
+  group_by(country, listed_in) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+# donut chart 만들기 (많은순으로 정렬)
+pie <- ggplot(genre_usa) +
+  geom_col(aes(x = 1, y = count, fill = reorder(listed_in,count)), position = "fill") +
+  coord_polar(theta = "y", start = 0) +
+  labs(title = "Movie Genres in United States", fill = "Genre") +
+  guides(fill = guide_legend(reverse = TRUE)) +
   facet_wrap(~ country) +
   theme_bw() +
   theme(axis.title = element_blank(), # remove axis and grid lines
@@ -244,17 +304,8 @@ pie <- ggplot(genre_country) +
 pie <- pie + xlim(0, 1.5)
 pie
 
-# 미국 한 나라의 장르 비율
-#도넛차트로 하고싶은뎅
-#genre_usa <- genre_country %>%
-#  filter(country == "United States") %>%
-#  arrange(desc(count))
-
-# donut chart 만들기
-#bar <- ggplot(genre_usa, aes(fill=listed_in, y=count, x=country)) +
-#  geom_bar(position="dodge", stat="identity") +
-#  lab
-#bar
 ```
 
-Very small portion of American movies are categorized as international movies.
+Very small portion of American movies are categorized as international movies. <- dㅣ건 미국 도넛차트만 둘거면 빼야할듯
+
+
