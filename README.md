@@ -1,6 +1,6 @@
 ## Data Science Portfolio
 
-This [GitHub Repository](https://github.com/hheejuice/Heeju_Portfolio) includes data science projects completed by Heeju Son. Projects are written in R using R Studio.
+This [GitHub Repository](https://github.com/hheejuice/Heeju_Portfolio) includes data science projects completed by Heeju Son who received a bachelor's degree in Economics from University of Washington. Projects are written in R using R Studio.
 
 For better portfolio browsing experience, please check out [Portfolio](https://hheejuice.github.io/Heeju_Portfolio/).
 
