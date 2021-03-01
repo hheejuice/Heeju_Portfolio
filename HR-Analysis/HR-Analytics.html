@@ -383,14 +383,13 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(Hmisc)
-library(knitr)
-library(kableExtra)
 library(scales)</code></pre>
 </div>
 <div id="data-preprocessing" class="section level3">
 <h3>Data PreProcessing</h3>
 <div id="basic-data-information" class="section level4">
 <h4>Basic Data Information</h4>
+<p>For the purpose of this project, I used a data scientist HR information data available on Kaggle.</p>
 <pre class="r"><code>#read data
 test &lt;- read.csv(&quot;aug_test.csv&quot;, stringsAsFactors = F)
 train &lt;- read.csv(&quot;aug_train.csv&quot;, stringsAsFactors = F)
@@ -717,11 +716,12 @@ sapply(test, function(x) sum(is.na(x) | x == 0 | x == &quot;&quot;))</code></pre
 ##                   5938                   6140                    423 
 ##         training_hours                 target 
 ##                      0                  14381</code></pre>
-<pre class="r"><code>#test1 &lt;- test1[!(test1$Customer_Age %in% boxplot(df$Customer_Age)$out),]</code></pre>
+<p>The dataset is comprised of two datasets - test and train. Test data had 2129 rows and 13 columns. Train data had 19158 rows and 14 columns. I checked if there were any duplicated enrollee id value in both datasets by looking at the number of unique values in ‘enrollee_id’ column. The unique value count matched the number of observations in each dataset, and this indicates that there are no duplicate enrollee id in the entire dataset. Next, I looked for NA,0,and blank values in both datasets to have an idea of how and what to pre-process.</p>
 </div>
 </div>
-<div id="basic-visualization" class="section level3">
-<h3>Basic Visualization</h3>
+<div id="basic-data-visualization" class="section level3">
+<h3>Basic Data Visualization</h3>
+<p>The graphs and charts in this section will give you an idea about how the data looks like in general. It will yet give any comparison analysis based on data scientists’ current job search status.</p>
 <div id="gender" class="section level4">
 <h4>Gender</h4>
 <pre class="r"><code>sex &lt;- train %&gt;% # create a dataframe called sex

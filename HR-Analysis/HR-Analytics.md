@@ -14,14 +14,14 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(Hmisc)
-library(knitr)
-library(kableExtra)
 library(scales)
 ```
 
 ### Data PreProcessing
 
 #### Basic Data Information
+
+For the purpose of this project, I used a data scientist HR information data available on Kaggle.
 
 
 ```r
@@ -398,11 +398,11 @@ sapply(train, function(x) sum(is.na(x) | x == 0 | x == ""))
 ##                      0                  14381
 ```
 
-```r
-#test1 <- test1[!(test1$Customer_Age %in% boxplot(df$Customer_Age)$out),]
-```
+The dataset is comprised of two datasets - test and train. Test data had 2129 rows and 13 columns. Train data had 19158 rows and 14 columns. I checked if there were any duplicated enrollee id value in both datasets by looking at the number of unique values in 'enrollee_id' column. The unique value count matched the number of observations in each dataset, and this indicates that there are no duplicate enrollee id in the entire dataset. Next, I looked for NA,0,and blank values in both datasets to have an idea of how and what to pre-process.
 
-### Basic Visualization 
+### Basic Data Visualization 
+
+The graphs and charts in this section will give you an idea about how the data looks like in general. It will yet give any comparison analysis based on data scientists' current job search status.
 
 #### Gender
 
