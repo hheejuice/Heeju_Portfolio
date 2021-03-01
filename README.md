@@ -12,8 +12,10 @@ For better portfolio browsing experience, please check out [Portfolio](https://h
   
       *Used Packages: tidyverse, dplyr, ggplot2, plotly, rworldmap*
   
-  <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/year-2.png" width="500"> </br></br>
-  <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/country-2.png" width="500"> </br></br>
+  <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/year-2.png" width="300"> <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/country-2.png" width="350">
+  
+  <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/genrebyyear-2.png" width="350"> <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/genrebycountry-2.png" width="350">  
+  
   * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfd
   
       *Used Packages: tidyverse, dplyr, ggplot2, plotly, rworldmap*
