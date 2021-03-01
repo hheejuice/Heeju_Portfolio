@@ -16,24 +16,35 @@ library(plotly)
 library(rworldmap)
 ```
 
-### Basic Data Information
+### Data Description
+
+For the purpose of this project, a Netflix dataset sourced from Kaggle has been used.
 
 ```{r data}
 df <- read.csv("netflix_titles.csv", stringsAsFactors = F) # read data
 
 summary(df) # summary statistics
 length(df$release_year) # number of observations
-length(unique(df[,"director"])) # number of unique values - it has duplicates
 
-sapply(df, function(x) sum(is.na(x) | x == 0 | x == "")) # number of NA, 0, and blank values
-sapply(df, function(x) sum(is.na(x))) # no NA
-sapply(df, function(x) sum(x == 0)) # no 0 values
-sapply(df, function(x) sum(x == "")) # every null values are blank values
+UniqueValue = function (x) {length(unique(x))} # shows number of unique values in each column
+apply(df, 2, UniqueValue) # number of unique values in each column
+
+sapply(df, function(x) sum(x == "")) # number of missing values
 ```
+
+The original dataset consists of 7787 rows and 12 columns. All columns excluding 'show_id' and 'title' had unique values less than 7787, which is the total number of rows of this Netflix dataset. This indicates presence of duplicates in those columns. Also, many blank - "" - values has been found in 'director','cast','country','date_added', and 'rating' columns.
+
+Cleaning all misleading values at once will lead to major data loss. In order to prevent data biases, pre-processing for this dataset will be done to a minimum. Cleaning will only be done on columns in use.
 
 ### Visualization
 
+In this section, only relevant columns will be pre-processed, then be used for creating visualizations. Pre-processing methodologies will be discussed under each analysis topic. 
+
 #### Netflix trends by year
+
+This section will investigate the Netflix trend in their contents addition by year - regardless of contents release date. Note that a movie released in 2017 can be added on Netflix in 2020. How many movies and TV shows they add to their platform each year? Does Netflix treat movies and TV shows differently?
+
+The 'date_added' column was originally in 'month day, year' format as character type. Therefore, it has been converted to numeric 'year' for yearly trend analysis. Missing values in 'date_added' also has been removed for the purpose of this analysis.
 
 ```{r year, include=T}
 # To investigate yearly trends, I need to eliminate Month and Day data from 'date_added' column
@@ -54,7 +65,8 @@ year
 bar <- ggplot(year, aes(x = date_added, y = count, fill = date_added)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = count), vjust = -0.3) +
-  labs(x = "Year", fill = "Year", title = "Number of Contents added to Netflix by Year")
+  labs(x = "Year", fill = "Year", title = "Number of Contents added to Netflix by Year") + 
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 bar
 
 # Netflix trends - movie vs TV shows
@@ -67,13 +79,17 @@ group
 # create bar plot for number of contents added by year by content type
 bar <- ggplot(group, aes(x = date_added, y = count, fill = type)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Netflix Trends by Year", x = "Year", "Type")
+  labs(title = "Netflix Trends by Year", x = "Year", "Type") + 
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 bar
 ```
+First bar plot shows the total number of movies and TV shows added on Netflix by year. After years of adding more contents each year, Netflix finally added less number of contents to its platform in 2020.
 
-After years of adding more contents each year, Netflix finally added less number of contents to its platform in 2020. Number of movies added to Netflix has dropped in 2020, whereas number of TV shows added has continued to increase.
+Second chart compares its trend in movies to that of TV shows. Although the number of movies added to Netflix outnumbers that of TV shows on Netflix, it started to show a decrease in 2020, whereas number of TV shows added has continued to increase. This may be an indication of Netflix focusing more on TV shows.
 
 #### Movie vs TV show
+
+This section will show total number of movies and TV shows on Netflix.
 
 ```{r type, include=T}
 # create data frame for number of contents by type
@@ -97,10 +113,13 @@ bar
 movie <- df[(df$type == "Movie"),]
 tv <- df[(df$type == "TV Show"),]
 ```
-Number of movies on Netflix is more than double the number of TV shows.
+As shown in the chart above, the number of movies on Netflix is more than double the number of TV shows.
 
+For further analysis on each content type, the dataset has been split down into two separate datasets based on the 'type' column.
 
 #### Netflix Movie Analysis
+
+The remaining of this project will examine movies on Netflix. The dataset 'movie' that has been created above will be used.
 
 #### Top 10 Countries by number of movies on Netflix
 
