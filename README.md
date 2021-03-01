@@ -8,11 +8,18 @@ For better portfolio browsing experience, please check out [Portfolio](https://h
 
 ## Contents
 * ### Data Analysis and Visualization
-  * [Netflix Analysis](Netflix-Analysis/Netflix-Analysis.md): dfsdfd </br> </br>
+  * [Netflix Analysis](Netflix-Analysis/Netflix-Analysis.md): dfsdfdfndslanflsdnfklsanlfdnaslfnlasdnflsdknflkdansflkansflasndflanskdfnlasnlakfa
+  
+      *Used Packages: tidyverse, dplyr, ggplot2, plotly, rworldmap*
+  
   <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/year-2.png" width="500"> </br></br>
   <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/country-2.png" width="500"> </br></br>
   * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfd
+  
+      *Used Packages: tidyverse, dplyr, ggplot2, plotly, rworldmap*
   * [Credit Card Customer Analysis](Credit-card-customer/Credit-Card-Customers.md): dfsdfd
+  
+      *Used Packages: tidyverse, dplyr, ggplot2, plotly, rworldmap*
 
 * ### Machine Learning
   * [project using ML Logistic Regression](https://hheejuice.github.io/Heeju_Portfolio/): ndflnfln
