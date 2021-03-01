@@ -83,6 +83,7 @@ bar <- ggplot(group, aes(x = date_added, y = count, fill = type)) +
   theme(plot.title = element_text(hjust = 0.5)) # center title
 bar
 ```
+
 First bar plot shows the total number of movies and TV shows added on Netflix by year. After years of adding more contents each year, Netflix finally added less number of contents to its platform in 2020.
 
 Second chart compares its trend in movies to that of TV shows. Although the number of movies added to Netflix outnumbers that of TV shows on Netflix, it started to show a decrease in 2020, whereas number of TV shows added has continued to increase. This may be an indication of Netflix focusing more on TV shows.
@@ -113,6 +114,7 @@ bar
 movie <- df[(df$type == "Movie"),]
 tv <- df[(df$type == "TV Show"),]
 ```
+
 As shown in the chart above, the number of movies on Netflix is more than double the number of TV shows.
 
 For further analysis on each content type, the dataset has been split down into two separate datasets based on the 'type' column.
