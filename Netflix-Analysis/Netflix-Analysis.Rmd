@@ -20,7 +20,7 @@ library(rworldmap)
 
 For the purpose of this project, a Netflix dataset sourced from Kaggle has been used.
 
-```{r data}
+```{r data, include = T}
 df <- read.csv("netflix_titles.csv", stringsAsFactors = F) # read data
 
 summary(df) # summary statistics
