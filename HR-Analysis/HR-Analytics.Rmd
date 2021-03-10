@@ -161,7 +161,9 @@ density <- train %>%
 
 # create a density plot of training hour distribution by company type
 plot <- ggplot(density, aes(x = training_hours)) +
-  geom_density(aes(color = company_type))
+  geom_density(aes(color = company_type)) +
+  labs(title = "Training Hour Distribution by Company Type") +
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 plot
 ```
 
@@ -242,7 +244,8 @@ pie
 
 #### Company Type
 
-this section will
+This section will study whether the type of a company matters to a data scientist's company decision or not. 
+
 ```{r type, include=T}
 #total number
 company <- train %>%
@@ -253,7 +256,8 @@ company <- train %>%
 freq <- ggplot(company, aes(fct_rev(fct_reorder(company_type, count)),count)) +
   geom_bar(fill = "#0073C2FF", stat = "identity") +
   geom_text(aes(label = count), vjust = -0.3) +
-  labs(x = "Company Type")
+  labs(x = "Company Type", title = "Companies data scientists work for") +
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 freq
 
 #looking for job change (target=1)
@@ -266,7 +270,8 @@ change <- train %>%
 freq <- ggplot(change, aes(fct_rev(fct_reorder(company_type, count)),count)) +
   geom_bar(fill = "#0073C2FF", stat = "identity") +
   geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
-  labs(x = "Company Type", title = "Looking for Job Change")
+  labs(x = "Company Type", title = "Looking for Job Change") +
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 freq
 
 #not looking for job change (target=0)
@@ -279,16 +284,17 @@ nochange <- train %>%
 freq <- ggplot(nochange, aes(fct_rev(fct_reorder(company_type, count)),count)) +
   geom_bar(fill = "#0073C2FF", stat = "identity") +
   geom_text(aes(label = paste0(count," (", paste0(round(percent,1),"%"),")"), vjust = -0.3)) +
-  labs(x = "Company Type", title = "Not Looking for Job Change")
+  labs(x = "Company Type", title = "Not Looking for Job Change") +
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 freq
 ```
 
-since the private limited companies take a huge portion in our dataset, it was not very surprising that the above graphs showed that the majority of both groups of data scientists - those who are looking for company change and those who are not - were currently working for private companies. It was interesting to see many data scientists willing to continuousky work for startups given that the company was well funded
-
-
-
+Since the private limited companies take a huge portion in our dataset, it was not very surprising that the above graphs showed that the majority of both groups of data scientists - those who are looking for company change and those who are not - were currently working for private companies. It was interesting to see many data scientists willing to continue working for startups given that the company was well funded. The number of data scientists who are not looking for company change in funded startups were twice as much as those in early stage startups. This indicates that the funding status of a company is one of the important factors to consider for a data scientist.
 
 #### Training Hours Distribution by groups of people
+
+In this section, I will study for a relationship between number of training bours and willingness to change company. Any missing values will be removed from 'company_type' and 'training_hours' columns.
+
 ```{r train, include=T}
 density <- train %>%
   filter(!company_type == "") %>% # remove missing values
@@ -296,11 +302,18 @@ density <- train %>%
   mutate(target = ifelse(target == "0", "Not Looking for Job Change","Looking for Job Change"))
 
 plot <- ggplot(density, aes(x = training_hours)) +
-  geom_density(aes(color = target))
+  geom_density(aes(color = target)) +
+  labs(title = "Training Hour Distribution") +
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 plot
 ```
 
+ACcording to the density plot above, there was not much differences between two groups of data scientists. It is likely that the number of training hours does not affect data scientists' decision to look for another company to work for.
+
 #### Years of Experience
+
+This section will examine the differences in the number of years of experiences between two groups of data scientists, and look for any existing relationships. Blank values will be removed from 'experience' column. Also, years of experience that exceed 20 years and those that are less than 1 year will be removed from the column for simplicity.
+
 ```{r yearexp, include=T}
 density <- train %>%
   filter(!experience == "") %>% # remove missing values
@@ -311,9 +324,23 @@ density <- train %>%
 
 plot <- ggplot(density, aes(x = experience)) +
   geom_density(aes(color = target)) +
-  labs(x = "Experience (years)", y = "Density", fill = "Group")
+  labs(x = "Experience (years)", y = "Density", fill = "Group") +
+  labs(title = "Years of Experience Distribution") +
+  theme(plot.title = element_text(hjust = 0.5)) # center title
 plot
 ```
 
-Those who are looking for job change tend to have less years of experience.
+The density plot above shows that those who are looking for job (company) change tend to have less years of experience. This may be because the employees usually look for better companies in their early career.
+
+
+
+
+
+
+
+
+
+
+
+
 
