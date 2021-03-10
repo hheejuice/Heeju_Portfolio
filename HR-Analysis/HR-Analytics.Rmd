@@ -16,9 +16,7 @@ library(Hmisc)
 library(scales)
 ```
 
-### Data PreProcessing
-
-#### Basic Data Information
+### Basic Data Information
 
 For the purpose of this project, I used a data scientist HR information data available on Kaggle.
 
@@ -240,7 +238,11 @@ pie <- ggplot(size2, aes(x = "", y = percent, fill = reorder(company_size,percen
 pie
 ```
 
+
+
 #### Company Type
+
+this section will
 ```{r type, include=T}
 #total number
 company <- train %>%
@@ -280,6 +282,12 @@ freq <- ggplot(nochange, aes(fct_rev(fct_reorder(company_type, count)),count)) +
   labs(x = "Company Type", title = "Not Looking for Job Change")
 freq
 ```
+
+since the private limited companies take a huge portion in our dataset, it was not very surprising that the above graphs showed that the majority of both groups of data scientists - those who are looking for company change and those who are not - were currently working for private companies. It was interesting to see many data scientists willing to continuousky work for startups given that the company was well funded
+
+
+
+
 #### Training Hours Distribution by groups of people
 ```{r train, include=T}
 density <- train %>%
