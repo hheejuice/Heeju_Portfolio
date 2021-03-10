@@ -19,7 +19,7 @@ For better portfolio browsing experience, please check out [Portfolio](https://h
   * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfddd
   
       *Used Packages: tidyverse, dplyr, ggplot2, Hmisc, scales*
-  * [Credit Card Customer Analysis](Credit-card-customer/Credit-Card-Customers.md): dfsdfd
+  * [Credit Card Customer Analysis](Credit-card-customer/Credit-Card-Customers.md): dfsdfdd
   
       *Used Packages: tidyverse, dplyr, ggplot2, Hmisc, knitr, kableExtra*
 
