@@ -16,7 +16,7 @@ For better portfolio browsing experience, please check out [Portfolio](https://h
   
   <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/genrebyyear-2.png" width="250"> <img src="Netflix-Analysis/Netflix-Analysis_files/figure-html/genrebycountry-2.png" width="250">  
   
-  * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfd
+  * [HR Analysis](HR-Analysis/HR-Analytics.md): dfsdfddd
   
       *Used Packages: tidyverse, dplyr, ggplot2, Hmisc, scales*
   * [Credit Card Customer Analysis](Credit-card-customer/Credit-Card-Customers.md): dfsdfd
