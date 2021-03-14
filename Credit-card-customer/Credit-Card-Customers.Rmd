@@ -18,74 +18,56 @@ library(knitr)
 library(kableExtra)
 ```
 
-### Data PreProcessing
+### Basic Data Description
 
-#### Basic Setup
-
-original data retrieved from Kaggle <br>
-try to understand data
-
-read dataset.. remove weird columns
+For the purpose of this project, a dataset that consists of credit card customer information has been retrieved from Kaggle.
 
 ```{r setup, include=TRUE}
-#read data
-df <- read.csv("BankChurners.csv", stringsAsFactors = F)
+df <- read.csv("BankChurners.csv", stringsAsFactors = F) #read data
+length(df) # number of observations in original dataset
 
 #remove columns that contain "Naive"
 df <- df %>%
   select(-contains('Naive'))
 
-#check column names again
-names(df)
+length(df) #number of observations in new dataset
 
-summary_df <- describe(df)
-summary_df
-#unlist(summary_df[[1]])[2:12]
+names(df) #check column names
 
-# check the number of unique client number
-length(unique(df[,"CLIENTNUM"])) # total rows are 10127, so there is no duplicates
+summary(df) # summary statistics
 
-# Check for NA values in column
-nrow(df[df$Avg_Utilization_Ratio == "NA",])
-# need more of these!!!!!!!!!!
+#check the number of unique client number
+length(unique(df[,"CLIENTNUM"])) # total rows are 10127, so there is no duplicates in client number
+
+#check for the number of NA, 0, missing values for each column
+sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
+
 ```
 
+The original dataset had 10127 rows and 23 columns. As suggested from the author of dataset, the last two columns containing the word "Naive" has been removed from the dataset, resulting a dataset with 10127 rows and 21 columns. There was no duplicated values in 'CLIENTNUM' column. A considerable amount of NA values has been found in a number of columns, and they will be pre-processed as we go along.
+
+### Outlier Removal
+
 ```{r outlier}
-cols <- colnames(df)
-cols <- cols[-1]
+cols <- colnames(df) # column names
+cols <- cols[-1] # exclude 'CLIENTNUM' column from outlier removal process
 par(mfrow=c(4,5))
 for (i in cols){
-    plot <- ggplot(df, aes_string(x = df$CLIENTNUM, y = i)) +
-    geom_point()
-    print(plot)
+  plot <- ggplot(df, aes_string(x = df$CLIENTNUM, y = i)) + geom_point()
+  print(plot)
 }
+```
 
+```{r removal, results = 'hide'}
 # remove outlier
 df1 <- df[!(df$Customer_Age %in% boxplot(df$Customer_Age)$out),]
 df1 <- df[!(df$Total_Amt_Chng_Q4_Q1 %in% boxplot(df$Total_Amt_Chng_Q4_Q1)$out),]
 df1 <- df[!(df$Total_Ct_Chng_Q4_Q1 %in% boxplot(df$Total_Ct_Chng_Q4_Q1)$out),]
-
-#attach(df)
-#par(mfrow=c(2,7))
-#scatter1 <- plot(CLIENTNUM, Customer_Age)
-#scatter2 <- plot(CLIENTNUM, Dependent_count)
-#scatter3 <- plot(CLIENTNUM, Months_on_book)
-#scatter4 <- plot(CLIENTNUM, Total_Relationship_Count)
-#scatter5 <- plot(CLIENTNUM, Months_Inactive_12_mon)
-#scatter6 <- plot(CLIENTNUM, Contacts_Count_12_mon)
-#scatter7 <- plot(CLIENTNUM, Credit_Limit)
-#scatter8 <- plot(CLIENTNUM, Total_Revolving_Bal)
-#scatter9 <- plot(CLIENTNUM, Avg_Open_To_Buy)
-#scatter10 <- plot(CLIENTNUM, Total_Amt_Chng_Q4_Q1)
-#scatter11 <- plot(CLIENTNUM, Total_Trans_Amt)
-#scatter12 <- plot(CLIENTNUM, Total_Trans_Ct)
-#scatter13 <- plot(CLIENTNUM, Total_Ct_Chng_Q4_Q1)
-#scatter14 <- plot(CLIENTNUM, Avg_Utilization_Ratio)
 ```
 
 ```{r remove}
-cols <- colnames(df1)
-cols <- cols[-1]
+cols <- colnames(df1) # column names
+cols <- cols[-1] # exclude 'CLIENTNUM' column from outlier removal process
 par(mfrow=c(4,5))
 for (i in cols){
     plot <- ggplot(df1, aes_string(x = df1$CLIENTNUM, y = i)) +
@@ -109,7 +91,6 @@ for (i in cols){
 #scatter12 <- plot(CLIENTNUM, Total_Trans_Ct)
 #scatter13 <- plot(CLIENTNUM, Total_Ct_Chng_Q4_Q1)
 #scatter14 <- plot(CLIENTNUM, Avg_Utilization_Ratio)
-
 ```
 
 ```{r dddd, include=FALSE}
@@ -183,11 +164,14 @@ boxplot(df1$Avg_Utilization_Ratio, ylab = "Avg_Utilization_Ratio")
 ```
 
 ### Binning
-Next step would be 'Binning' continuous variables into specific groups.
-need some transformation before analysis
+
+Some of the columns in the dataset consists of continuous variables, and that will need some transformation before further analysis. The following section will show the process of binning continuous variables into specific groups.
+
 
 #### Age
-Categorize age into 6 groups
+
+The original 'Customer_Age' column is made of continous age variables ranging from 20 to 80. In this section, the variable will be categorized into a total of 6 groups.
+
 ```{r age, echo=TRUE}
 min(df1$Customer_Age)
 max(df1$Customer_Age)
