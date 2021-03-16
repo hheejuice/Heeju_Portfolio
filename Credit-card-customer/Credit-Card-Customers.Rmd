@@ -48,6 +48,8 @@ The original dataset had 10127 rows and 23 columns. As suggested from the author
 
 ### Outlier Removal
 
+This section will focus on removing outliers from the dataset to produce statistically significant results. Scatter plot for each column will be created to identify existing outliers.
+
 ```{r outlier}
 cols <- colnames(df) # column names
 cols <- cols[-1] # exclude 'CLIENTNUM' column from outlier removal process
@@ -58,8 +60,10 @@ for (i in cols){
 }
 ```
 
+Looking at the scatter plot of each column, I could observe some outlier data points on a few columns - 'Customer_Age', 'Tota_Amt_Chng_Q4_Q1', 'Total_Ct_Chng_Q4_Q1'.
+
 ```{r removal, results = 'hide'}
-# remove outlier
+# identify and remove outliers using box plots
 df1 <- df[!(df$Customer_Age %in% boxplot(df$Customer_Age)$out),]
 df1 <- df[!(df$Total_Amt_Chng_Q4_Q1 %in% boxplot(df$Total_Amt_Chng_Q4_Q1)$out),]
 df1 <- df[!(df$Total_Ct_Chng_Q4_Q1 %in% boxplot(df$Total_Ct_Chng_Q4_Q1)$out),]
@@ -94,6 +98,7 @@ for (i in cols){
 ```
 
 ```{r dddd, include=FALSE}
+#delete this part?
 #boxplot showing outliers
 par(mfrow=c(2,7))
 boxplot(df$Customer_Age, ylab = "Customer_Age")
@@ -170,40 +175,41 @@ Some of the columns in the dataset consists of continuous variables, and that wi
 
 #### Age
 
-The original 'Customer_Age' column is made of continous age variables ranging from 20 to 80. In this section, the variable will be categorized into a total of 6 groups.
+The original 'Customer_Age' column is made of continuous age variables ranging from 20 to 80. In this section, the variable will be categorized into a total of 6 groups.
 
 ```{r age, echo=TRUE}
-min(df1$Customer_Age)
-max(df1$Customer_Age)
-age_labels <- c("20-29","30-39","40-49","50-59","60-69","70+")
-df2 <- df1 %>%
+min(df1$Customer_Age) # minimum value of 'Customer_Age' column
+max(df1$Customer_Age) # maximum value
+age_labels <- c("20-29","30-39","40-49","50-59","60-69","70+") # define groups
+df2 <- df1 %>% # break 'Customer_Age' column data into defined groups and store it as a new column
   mutate(Age = cut(Customer_Age,
                    breaks = c(20,30,40,50,60,70,80), 
                    right = F, 
                    labels = age_labels)) 
 
-#check the age binning by looking at randomly chosen data subset
+#check the age binning by looking at 10 randomly chosen data subset
 age_check <- df2 %>%
   select(c(Customer_Age,Age)) %>%
   sample_n(10)
 
-age_check
+age_check # correctly done!
 
 #remove continuous age value column
 df2 <- df2 %>%
   relocate(Age, .after = Customer_Age) %>%
   select(-Customer_Age)
 
-df2[1:5,]
+df2[1:5,] # check
 ```
 
 #### Number of Dependents
-Categorize number of dependent into 4 groups
+
+This section will categorize the 'Dependent_count' column which consists of number of dependents data into 4 different groups. 
 ```{r dependent, echo=TRUE}
-min(df2$Dependent_count)
-max(df2$Dependent_count)
-dependent_labels <- c("0","1-2","3-4","5+")
-df2 <- df2 %>%
+min(df2$Dependent_count) # min value of 'Dependent_count' column
+max(df2$Dependent_count) # max value
+dependent_labels <- c("0","1-2","3-4","5+") # define binning groups
+df2 <- df2 %>% # break the column into defined groups of data and store it as a new column
   mutate(Dependent_Count = cut(Dependent_count,
                                breaks = c(0,1,3,5,10), 
                                right = F, 
@@ -216,23 +222,28 @@ dependent_check <- df2 %>%
 
 dependent_check
 
-#remove continuous dependent count value column
-df2 <- df2 %>%
+df2 <- df2 %>% #remove continuous dependent count value column
   relocate(Dependent_Count, .after = Dependent_count) %>%
   select(-Dependent_count)
-df2[1:5,]
+df2[1:5,] # check
 ```
 
-## Create Tables for Analysis
+### Create Tables for Analysis
 
-examine groups of people/etc.. by comparing quantitative values
+The following section will examine and compare quantitative values, and look for any meaningful insights from the dataset.
+
 ```{r na, echo=TRUE}
 # Check for NA values in column
-#nrow(df[df$Avg_Utilization_Ratio == "NA",])
+#check for the number of NA, 0, missing values for each column
+sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
+
+sapply(df2, function(x) sum(is.na(x) | x == 0 | x == ""))
 ```
 
 #### Gender and Age
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+In this section, the dataset has been grouped by gender and age. I then calculated the mean utilization ratio for each group to compare card usage across diferent gender and age groups.
+
 ```{r genderage, echo=TRUE}
 #group by biography info
 #group by gender and age for utilization ratio comparison
@@ -240,6 +251,8 @@ summary <- df2 %>%
   group_by(Gender, Age) %>%
   summarise(mean_util_ratio = mean(Avg_Utilization_Ratio))
 kable(summary)
+
+
 ```
 
 #### Marital status

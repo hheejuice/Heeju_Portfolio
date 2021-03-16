@@ -147,6 +147,8 @@ The original dataset had 10127 rows and 23 columns. As suggested from the author
 
 ### Outlier Removal
 
+This section will focus on removing outliers from the dataset to produce statistically significant results. Scatter plot for each column will be created to identify existing outliers.
+
 
 ```r
 cols <- colnames(df) # column names
@@ -160,9 +162,11 @@ for (i in cols){
 
 ![](Credit-Card-Customers_files/figure-html/outlier-1.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-2.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-3.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-4.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-5.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-6.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-7.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-8.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-9.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-10.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-11.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-12.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-13.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-14.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-15.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-16.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-17.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-18.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-19.png)<!-- -->![](Credit-Card-Customers_files/figure-html/outlier-20.png)<!-- -->
 
+Looking at the scatter plot of each column, I could observe some outlier data points on a few columns - 'Customer_Age', 'Tota_Amt_Chng_Q4_Q1', 'Total_Ct_Chng_Q4_Q1'.
+
 
 ```r
-# remove outlier
+# identify and remove outliers using box plots
 df1 <- df[!(df$Customer_Age %in% boxplot(df$Customer_Age)$out),]
 ```
 
@@ -182,7 +186,7 @@ df1 <- df[!(df$Total_Ct_Chng_Q4_Q1 %in% boxplot(df$Total_Ct_Chng_Q4_Q1)$out),]
 
 
 ```r
-cols <- colnames(df1)
+cols <- colnames(df1) # column names
 cols <- cols[-1] # exclude 'CLIENTNUM' column from outlier removal process
 par(mfrow=c(4,5))
 for (i in cols){
@@ -216,15 +220,17 @@ for (i in cols){
 
 
 ### Binning
-The following section will show the binning process of continuous variables into specific groups.
 
-need some transformation before analysis
+Some of the columns in the dataset consists of continuous variables, and that will need some transformation before further analysis. The following section will show the process of binning continuous variables into specific groups.
+
 
 #### Age
-Categorize age into 6 groups
+
+The original 'Customer_Age' column is made of continuous age variables ranging from 20 to 80. In this section, the variable will be categorized into a total of 6 groups.
+
 
 ```r
-min(df1$Customer_Age)
+min(df1$Customer_Age) # minimum value of 'Customer_Age' column
 ```
 
 ```
@@ -232,7 +238,7 @@ min(df1$Customer_Age)
 ```
 
 ```r
-max(df1$Customer_Age)
+max(df1$Customer_Age) # maximum value
 ```
 
 ```
@@ -240,33 +246,33 @@ max(df1$Customer_Age)
 ```
 
 ```r
-age_labels <- c("20-29","30-39","40-49","50-59","60-69","70+")
-df2 <- df1 %>%
+age_labels <- c("20-29","30-39","40-49","50-59","60-69","70+") # define groups
+df2 <- df1 %>% # break 'Customer_Age' column data into defined groups and store it as a new column
   mutate(Age = cut(Customer_Age,
                    breaks = c(20,30,40,50,60,70,80), 
                    right = F, 
                    labels = age_labels)) 
 
-#check the age binning by looking at randomly chosen data subset
+#check the age binning by looking at 10 randomly chosen data subset
 age_check <- df2 %>%
   select(c(Customer_Age,Age)) %>%
   sample_n(10)
 
-age_check
+age_check # correctly done!
 ```
 
 ```
 ##    Customer_Age   Age
-## 1            37 30-39
-## 2            27 20-29
-## 3            43 40-49
-## 4            49 40-49
-## 5            61 60-69
-## 6            56 50-59
-## 7            54 50-59
-## 8            57 50-59
-## 9            52 50-59
-## 10           49 40-49
+## 1            57 50-59
+## 2            51 50-59
+## 3            40 40-49
+## 4            52 50-59
+## 5            30 30-39
+## 6            48 40-49
+## 7            53 50-59
+## 8            49 40-49
+## 9            46 40-49
+## 10           30 30-39
 ```
 
 ```r
@@ -275,7 +281,7 @@ df2 <- df2 %>%
   relocate(Age, .after = Customer_Age) %>%
   select(-Customer_Age)
 
-df2[1:5,]
+df2[1:5,] # check
 ```
 
 ```
@@ -312,10 +318,11 @@ df2[1:5,]
 ```
 
 #### Number of Dependents
-Categorize number of dependent into 4 groups
+
+This section will categorize the 'Dependent_count' column which consists of number of dependents data into 4 different groups. 
 
 ```r
-min(df2$Dependent_count)
+min(df2$Dependent_count) # min value of 'Dependent_count' column
 ```
 
 ```
@@ -323,7 +330,7 @@ min(df2$Dependent_count)
 ```
 
 ```r
-max(df2$Dependent_count)
+max(df2$Dependent_count) # max value
 ```
 
 ```
@@ -331,8 +338,8 @@ max(df2$Dependent_count)
 ```
 
 ```r
-dependent_labels <- c("0","1-2","3-4","5+")
-df2 <- df2 %>%
+dependent_labels <- c("0","1-2","3-4","5+") # define binning groups
+df2 <- df2 %>% # break the column into defined groups of data and store it as a new column
   mutate(Dependent_Count = cut(Dependent_count,
                                breaks = c(0,1,3,5,10), 
                                right = F, 
@@ -348,24 +355,23 @@ dependent_check
 
 ```
 ##    Dependent_count Dependent_Count
-## 1                2             1-2
-## 2                4             3-4
+## 1                3             3-4
+## 2                2             1-2
 ## 3                3             3-4
 ## 4                4             3-4
-## 5                4             3-4
-## 6                3             3-4
-## 7                2             1-2
-## 8                4             3-4
+## 5                2             1-2
+## 6                2             1-2
+## 7                3             3-4
+## 8                2             1-2
 ## 9                3             3-4
 ## 10               0               0
 ```
 
 ```r
-#remove continuous dependent count value column
-df2 <- df2 %>%
+df2 <- df2 %>% #remove continuous dependent count value column
   relocate(Dependent_Count, .after = Dependent_count) %>%
   select(-Dependent_count)
-df2[1:5,]
+df2[1:5,] # check
 ```
 
 ```
@@ -401,17 +407,59 @@ df2[1:5,]
 ## 5            1201             42               0.680                 0.217
 ```
 
-## Create Tables for Analysis
+### Create Tables for Analysis
 
-examine groups of people/etc.. by comparing quantitative values
+The following section will examine and compare quantitative values, and look for any meaningful insights from the dataset.
+
 
 ```r
 # Check for NA values in column
-#nrow(df[df$Avg_Utilization_Ratio == "NA",])
+#check for the number of NA, 0, missing values for each column
+sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
+```
+
+```
+##                CLIENTNUM           Attrition_Flag             Customer_Age 
+##                        0                        0                        0 
+##                   Gender          Dependent_count          Education_Level 
+##                        0                      904                        0 
+##           Marital_Status          Income_Category            Card_Category 
+##                        0                        0                        0 
+##           Months_on_book Total_Relationship_Count   Months_Inactive_12_mon 
+##                        0                        0                       29 
+##    Contacts_Count_12_mon             Credit_Limit      Total_Revolving_Bal 
+##                      399                        0                     2470 
+##          Avg_Open_To_Buy     Total_Amt_Chng_Q4_Q1          Total_Trans_Amt 
+##                        0                        5                        0 
+##           Total_Trans_Ct      Total_Ct_Chng_Q4_Q1    Avg_Utilization_Ratio 
+##                        0                        7                     2470
+```
+
+```r
+sapply(df2, function(x) sum(is.na(x) | x == 0 | x == ""))
+```
+
+```
+##                CLIENTNUM           Attrition_Flag                      Age 
+##                        0                        0                        0 
+##                   Gender          Dependent_Count          Education_Level 
+##                        0                      863                        0 
+##           Marital_Status          Income_Category            Card_Category 
+##                        0                        0                        0 
+##           Months_on_book Total_Relationship_Count   Months_Inactive_12_mon 
+##                        0                        0                       29 
+##    Contacts_Count_12_mon             Credit_Limit      Total_Revolving_Bal 
+##                      375                        0                     2383 
+##          Avg_Open_To_Buy     Total_Amt_Chng_Q4_Q1          Total_Trans_Amt 
+##                        0                        0                        0 
+##           Total_Trans_Ct      Total_Ct_Chng_Q4_Q1    Avg_Utilization_Ratio 
+##                        0                        0                     2383
 ```
 
 #### Gender and Age
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+In this section, the dataset has been grouped by gender and age. I then calculated the mean utilization ratio for each group to compare card usage across diferent gender and age groups.
+
 
 ```r
 #group by biography info
