@@ -122,28 +122,28 @@ length(unique(df[,"CLIENTNUM"])) # total rows are 10127, so there is no duplicat
 ```
 
 ```r
-#check for the number of NA, 0, missing values for each column
-sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
+#check for the number of NA, missing values for each column
+sapply(df, function(x) sum(is.na(x) | x == "")) # no such values
 ```
 
 ```
 ##                CLIENTNUM           Attrition_Flag             Customer_Age 
 ##                        0                        0                        0 
 ##                   Gender          Dependent_count          Education_Level 
-##                        0                      904                        0 
+##                        0                        0                        0 
 ##           Marital_Status          Income_Category            Card_Category 
 ##                        0                        0                        0 
 ##           Months_on_book Total_Relationship_Count   Months_Inactive_12_mon 
-##                        0                        0                       29 
+##                        0                        0                        0 
 ##    Contacts_Count_12_mon             Credit_Limit      Total_Revolving_Bal 
-##                      399                        0                     2470 
+##                        0                        0                        0 
 ##          Avg_Open_To_Buy     Total_Amt_Chng_Q4_Q1          Total_Trans_Amt 
-##                        0                        5                        0 
+##                        0                        0                        0 
 ##           Total_Trans_Ct      Total_Ct_Chng_Q4_Q1    Avg_Utilization_Ratio 
-##                        0                        7                     2470
+##                        0                        0                        0
 ```
 
-The original dataset had 10127 rows and 23 columns. As suggested from the author of dataset, the last two columns containing the word "Naive" has been removed from the dataset, resulting a dataset with 10127 rows and 21 columns. There was no duplicated values in 'CLIENTNUM' column. A considerable amount of NA values has been found in a number of columns, and they will be pre-processed as we go along.
+The original dataset had 10127 rows and 23 columns. As suggested from the author of dataset, the last two columns containing the word "Naive" has been removed from the dataset, resulting a dataset with 10127 rows and 21 columns. There was no duplicated values in 'CLIENTNUM' column. There was no NA or missing values in the data set that needs to be cleaned.
 
 ### Outlier Removal
 
@@ -263,16 +263,16 @@ age_check # correctly done!
 
 ```
 ##    Customer_Age   Age
-## 1            57 50-59
-## 2            51 50-59
-## 3            40 40-49
-## 4            52 50-59
-## 5            30 30-39
-## 6            48 40-49
-## 7            53 50-59
-## 8            49 40-49
-## 9            46 40-49
-## 10           30 30-39
+## 1            60 60-69
+## 2            36 30-39
+## 3            42 40-49
+## 4            46 40-49
+## 5            51 50-59
+## 6            50 50-59
+## 7            50 50-59
+## 8            39 30-39
+## 9            45 40-49
+## 10           55 50-59
 ```
 
 ```r
@@ -355,15 +355,15 @@ dependent_check
 
 ```
 ##    Dependent_count Dependent_Count
-## 1                3             3-4
-## 2                2             1-2
-## 3                3             3-4
-## 4                4             3-4
-## 5                2             1-2
+## 1                4             3-4
+## 2                1             1-2
+## 3                2             1-2
+## 4                1             1-2
+## 5                3             3-4
 ## 6                2             1-2
-## 7                3             3-4
-## 8                2             1-2
-## 9                3             3-4
+## 7                2             1-2
+## 8                0               0
+## 9                4             3-4
 ## 10               0               0
 ```
 
@@ -409,64 +409,19 @@ df2[1:5,] # check
 
 ### Create Tables for Analysis
 
-The following section will examine and compare quantitative values, and look for any meaningful insights from the dataset.
-
-
-```r
-# Check for NA values in column
-#check for the number of NA, 0, missing values for each column
-sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
-```
-
-```
-##                CLIENTNUM           Attrition_Flag             Customer_Age 
-##                        0                        0                        0 
-##                   Gender          Dependent_count          Education_Level 
-##                        0                      904                        0 
-##           Marital_Status          Income_Category            Card_Category 
-##                        0                        0                        0 
-##           Months_on_book Total_Relationship_Count   Months_Inactive_12_mon 
-##                        0                        0                       29 
-##    Contacts_Count_12_mon             Credit_Limit      Total_Revolving_Bal 
-##                      399                        0                     2470 
-##          Avg_Open_To_Buy     Total_Amt_Chng_Q4_Q1          Total_Trans_Amt 
-##                        0                        5                        0 
-##           Total_Trans_Ct      Total_Ct_Chng_Q4_Q1    Avg_Utilization_Ratio 
-##                        0                        7                     2470
-```
-
-```r
-sapply(df2, function(x) sum(is.na(x) | x == 0 | x == ""))
-```
-
-```
-##                CLIENTNUM           Attrition_Flag                      Age 
-##                        0                        0                        0 
-##                   Gender          Dependent_Count          Education_Level 
-##                        0                      863                        0 
-##           Marital_Status          Income_Category            Card_Category 
-##                        0                        0                        0 
-##           Months_on_book Total_Relationship_Count   Months_Inactive_12_mon 
-##                        0                        0                       29 
-##    Contacts_Count_12_mon             Credit_Limit      Total_Revolving_Bal 
-##                      375                        0                     2383 
-##          Avg_Open_To_Buy     Total_Amt_Chng_Q4_Q1          Total_Trans_Amt 
-##                        0                        0                        0 
-##           Total_Trans_Ct      Total_Ct_Chng_Q4_Q1    Avg_Utilization_Ratio 
-##                        0                        0                     2383
-```
+The following section will examine and compare quantitative values, and look for any meaningful insights from the data set.
 
 #### Gender and Age
 
-In this section, the dataset has been grouped by gender and age. I then calculated the mean utilization ratio for each group to compare card usage across diferent gender and age groups.
+In this section, the dataset has been grouped by gender and age. I then calculated the mean utilization ratio for each group to compare the spending nature of different gender and age groups.
 
 
 ```r
-#group by biography info
-#group by gender and age for utilization ratio comparison
+#group by biography info - gender and age - for utilization ratio comparison
 summary <- df2 %>%
   group_by(Gender, Age) %>%
-  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio))
+  summarise(count = n(), # count the number of data for each group
+            mean_util_ratio = mean(Avg_Utilization_Ratio)) # calculate mean utilization ratio for each group
 ```
 
 ```
@@ -482,6 +437,7 @@ kable(summary)
   <tr>
    <th style="text-align:left;"> Gender </th>
    <th style="text-align:left;"> Age </th>
+   <th style="text-align:right;"> count </th>
    <th style="text-align:right;"> mean_util_ratio </th>
   </tr>
  </thead>
@@ -489,72 +445,89 @@ kable(summary)
   <tr>
    <td style="text-align:left;"> F </td>
    <td style="text-align:left;"> 20-29 </td>
+   <td style="text-align:right;"> 92 </td>
    <td style="text-align:right;"> 0.3618587 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> F </td>
    <td style="text-align:left;"> 30-39 </td>
+   <td style="text-align:right;"> 922 </td>
    <td style="text-align:right;"> 0.3424089 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> F </td>
    <td style="text-align:left;"> 40-49 </td>
+   <td style="text-align:right;"> 2335 </td>
    <td style="text-align:right;"> 0.3317936 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> F </td>
    <td style="text-align:left;"> 50-59 </td>
+   <td style="text-align:right;"> 1563 </td>
    <td style="text-align:right;"> 0.3536289 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> F </td>
    <td style="text-align:left;"> 60-69 </td>
+   <td style="text-align:right;"> 264 </td>
    <td style="text-align:right;"> 0.3405152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> M </td>
    <td style="text-align:left;"> 20-29 </td>
+   <td style="text-align:right;"> 98 </td>
    <td style="text-align:right;"> 0.2891939 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> M </td>
    <td style="text-align:left;"> 30-39 </td>
+   <td style="text-align:right;"> 853 </td>
    <td style="text-align:right;"> 0.2306788 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> M </td>
    <td style="text-align:left;"> 40-49 </td>
+   <td style="text-align:right;"> 2058 </td>
    <td style="text-align:right;"> 0.1736448 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> M </td>
    <td style="text-align:left;"> 50-59 </td>
+   <td style="text-align:right;"> 1313 </td>
    <td style="text-align:right;"> 0.1949627 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> M </td>
    <td style="text-align:left;"> 60-69 </td>
+   <td style="text-align:right;"> 234 </td>
    <td style="text-align:right;"> 0.2813291 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> M </td>
    <td style="text-align:left;"> 70+ </td>
+   <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0.4600000 </td>
   </tr>
 </tbody>
 </table>
 
+The 70+ age male group had mean utilization ratio of 0.46 which is very high compared to the mean ratio of other customer groups that were in the range of 0.19-0.37. However, the group only had 1 number of observations. Also, since there is no 70+ female credit card customer in our data set, there is no group to compare the 70+ male group against. Therefore, 70+ male group will be excluded from comparison analysis.
+
+Overall, male credit card customers exhibited lower credit utilization ratio compared to that of female credit card customers. Utilization ratio is the amount of money you've been using on credit divided by your credit limit - expressed as percentages. Therefore, the above table suggests that the female customers are more likely to use high amount of revolving credit compared with their credit limit. This may indicate that males are doing better job managing their credit, and that females are overspending more than males.
+
+The credit card customers in their twenties exhibited the highest utilization ratio among all age groups. This was true for both male and female. Also, the customers in their forties exhibited the lowest utilization ratio among all. This may indicate that people in their forties in general are better at managing credit compared to other age groups, while people in their twenties are doing worst at it.
+ 
 #### Marital status
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+In this section, the data set will be grouped by their marital status.
+
 
 ```r
-#group by family info
-#group by marital status for multiple comparisons
+#group by family info - marital status - for comparison
 summary2 <- df2 %>%
   group_by(Marital_Status) %>%
-  summarise(mean_inactive_months_count = mean(Months_Inactive_12_mon),
-            mean_util_ratio = mean(Avg_Utilization_Ratio),
-            mean_trans_count = mean(Total_Trans_Ct))
+  summarise(mean_inactive_12_months = mean(Months_Inactive_12_mon),
+            mean_util_ratio = mean(Avg_Utilization_Ratio))
 ```
 
 ```
@@ -569,9 +542,8 @@ kable(summary2)
  <thead>
   <tr>
    <th style="text-align:left;"> Marital_Status </th>
-   <th style="text-align:right;"> mean_inactive_months_count </th>
+   <th style="text-align:right;"> mean_inactive_12_months </th>
    <th style="text-align:right;"> mean_util_ratio </th>
-   <th style="text-align:right;"> mean_trans_count </th>
   </tr>
  </thead>
 <tbody>
@@ -579,43 +551,39 @@ kable(summary2)
    <td style="text-align:left;"> Divorced </td>
    <td style="text-align:right;"> 2.356354 </td>
    <td style="text-align:right;"> 0.2576823 </td>
-   <td style="text-align:right;"> 67.92265 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Married </td>
    <td style="text-align:right;"> 2.331089 </td>
    <td style="text-align:right;"> 0.2882040 </td>
-   <td style="text-align:right;"> 63.03816 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Single </td>
    <td style="text-align:right;"> 2.354031 </td>
    <td style="text-align:right;"> 0.2647613 </td>
-   <td style="text-align:right;"> 68.52257 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Unknown </td>
    <td style="text-align:right;"> 2.321775 </td>
    <td style="text-align:right;"> 0.2576352 </td>
-   <td style="text-align:right;"> 68.18585 </td>
   </tr>
 </tbody>
 </table>
 
-```r
-#married who has the highest utilization ratio are least likely to be inactive for 12 months
-```
+The group with unknown marital status will be excluded from analysis due to their lack of information. The 'Months_Inactive_12_mon' column in the original dataset shows how likely is a person to stay inactive for 12 months on their credit card. Therefore, the 'mean_inactive_12_months' column in the table created above shows the same thing but for each group with different marital status. According to the table, the married exhibited lowest number of 2.331089 for 'mean_inactive_12_months' whereas the divorced exhibited the highest number of 2.356354. This suggests that the married are least likely to be inactive for 12 months. The married also had the highest credit utilization ratio, suggesting they tend to spend more compared to divorced or single credit card customers.
 
 #### Dependents
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+This section will have the data set grouped by the number of dependents. 
+
 
 ```r
 #group by number of dependents
 summary3 <- df2 %>%
   group_by(Dependent_Count) %>%
-  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio), 
-            mean_trans_count = mean(Total_Trans_Ct),
-            mean_revolving_balance = mean(Total_Revolving_Bal))
+  summarise(mean_revolving_balance = mean(Total_Revolving_Bal),
+            mean_util_ratio = mean(Avg_Utilization_Ratio), 
+            mean_trans_count = mean(Total_Trans_Ct))
 ```
 
 ```
@@ -630,52 +598,61 @@ kable(summary3)
  <thead>
   <tr>
    <th style="text-align:left;"> Dependent_Count </th>
+   <th style="text-align:right;"> mean_revolving_balance </th>
    <th style="text-align:right;"> mean_util_ratio </th>
    <th style="text-align:right;"> mean_trans_count </th>
-   <th style="text-align:right;"> mean_revolving_balance </th>
   </tr>
  </thead>
 <tbody>
   <tr>
    <td style="text-align:left;"> 0 </td>
+   <td style="text-align:right;"> 1133.487 </td>
    <td style="text-align:right;"> 0.2914751 </td>
    <td style="text-align:right;"> 62.78795 </td>
-   <td style="text-align:right;"> 1133.487 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> 1-2 </td>
+   <td style="text-align:right;"> 1169.151 </td>
    <td style="text-align:right;"> 0.2809137 </td>
    <td style="text-align:right;"> 65.95606 </td>
-   <td style="text-align:right;"> 1169.151 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> 3-4 </td>
+   <td style="text-align:right;"> 1151.157 </td>
    <td style="text-align:right;"> 0.2645555 </td>
    <td style="text-align:right;"> 66.14624 </td>
-   <td style="text-align:right;"> 1151.157 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> 5+ </td>
+   <td style="text-align:right;"> 1189.548 </td>
    <td style="text-align:right;"> 0.2699658 </td>
    <td style="text-align:right;"> 70.39853 </td>
-   <td style="text-align:right;"> 1189.548 </td>
   </tr>
 </tbody>
 </table>
 
+The revolving balance is the amount of unpaid credit card spending at the end of billing cycle. The mean revolving balance increased in proportion to the number of dependents, although there was a slight decrease in revolving balance for the group with 3-4 dependents. This suggests that credit card customers with more number of dependents are more likely to have hard time paying off their credit card.
+
+As opposed to the revolving balance, the credit utilization ratio was in inverse proportion to the number of dependents. Group of card customers with no dependents exhibited the highest utilization ratio. This indicates that people with no dependents spend credit card more compared to people with dependents. 
+
+In summary, the credit card users with many dependents are having hard time paying off their credit card back, although they are better at managing credit card and keeping the spending low.
+
 #### Card Class
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+The data set will be grouped by card categories in this section.
+
 
 ```r
-#group by card info
+#group by card info 
 #calculated revolving balance percentage for better comparison
 summary4 <- df2 %>%
   group_by(Card_Category) %>%
-  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio),
-            mean_credit_limit = mean(Credit_Limit), 
-            mean_revolving_balance = mean(Total_Revolving_Bal),
-            revolving_balance_perc = (mean_revolving_balance/mean_credit_limit)*100) %>%
-    arrange(match(Card_Category, c("Blue","Silver","Platinum","Gold")))
+  summarise(mean_credit_limit = mean(Credit_Limit), # mean credit value for each card group
+            mean_revolving_balance = mean(Total_Revolving_Bal), # mean revolving balance for each group
+            # calculate unpaid credit balance (revolving balance) / total credit limit - in percentages
+            revolving_balance_perc = (mean_revolving_balance/mean_credit_limit)*100,
+            mean_util_ratio = mean(Avg_Utilization_Ratio)*100) %>% # mean utilization ratio in percentages
+  arrange(match(Card_Category, c("Blue","Silver","Platinum","Gold"))) # in the order of least to most prestigious card type
 ```
 
 ```
@@ -690,46 +667,54 @@ kable(summary4)
  <thead>
   <tr>
    <th style="text-align:left;"> Card_Category </th>
-   <th style="text-align:right;"> mean_util_ratio </th>
    <th style="text-align:right;"> mean_credit_limit </th>
    <th style="text-align:right;"> mean_revolving_balance </th>
    <th style="text-align:right;"> revolving_balance_perc </th>
+   <th style="text-align:right;"> mean_util_ratio </th>
   </tr>
  </thead>
 <tbody>
   <tr>
    <td style="text-align:left;"> Blue </td>
-   <td style="text-align:right;"> 0.2904983 </td>
    <td style="text-align:right;"> 7352.228 </td>
    <td style="text-align:right;"> 1153.649 </td>
    <td style="text-align:right;"> 15.691143 </td>
+   <td style="text-align:right;"> 29.049834 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Silver </td>
-   <td style="text-align:right;"> 0.0571434 </td>
    <td style="text-align:right;"> 25272.415 </td>
    <td style="text-align:right;"> 1207.188 </td>
    <td style="text-align:right;"> 4.776702 </td>
+   <td style="text-align:right;"> 5.714339 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Platinum </td>
-   <td style="text-align:right;"> 0.0436500 </td>
    <td style="text-align:right;"> 30283.450 </td>
    <td style="text-align:right;"> 1267.950 </td>
    <td style="text-align:right;"> 4.186940 </td>
+   <td style="text-align:right;"> 4.365000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Gold </td>
-   <td style="text-align:right;"> 0.0576786 </td>
    <td style="text-align:right;"> 28534.348 </td>
    <td style="text-align:right;"> 1358.750 </td>
    <td style="text-align:right;"> 4.761805 </td>
+   <td style="text-align:right;"> 5.767857 </td>
   </tr>
 </tbody>
 </table>
 
+The utilization ratio shown in the 'mean_util_ratio' is the used amount divided by total credit limit. As opposed to that, the 'revolving_balance_perc' I calculated is the revolving balance divided by total credit limit. In short, the former shows the percentage amount of your credit card spending, whereas the latter shows how much you couldn't pay off your spending amount at the end of the billing cycle. 
+
+Overall, the revolving balance/credit limit and the utilization ratio exhibited same patterns. They were both high for blue cards, and low for all other card types - but lowest for platinum. The utilization ratio was about 29% for blue card customers. However, the customers with silver, platinum, and gold cards have utilization ratio in the range of 4%-6%, as opposed to the 29% for blue card customers. This suggests that customers with blue cards, which is the least prestigious card type, tend to use the card a lot compared to customers with different card types, and the customers with other card types spend much less on their credit card. 
+
+The revolving balance/credit limit was about 15% for blue card customers, which is about half of the utilization ratio. For other card type customers, the revolving balance/credit limit is only slightly lower than their utilization ratio. This suggests that blue card customers are doing better job managing their credit by paying off their debt on time.
+
 #### Education Level
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+In this section, the data will be grouped by education level.
+
 
 ```r
 #group by education level for comparison of credit limit and revolving balance
@@ -795,6 +780,6 @@ kable(summary5)
 </tbody>
 </table>
 
-
+Surprisingly, there was no clear patterns in credit limits across different education level. Uneducated and post-graduate customers had higher credit limit than other groups of people. The amount of revolving balance was similar for all groups but doctorate level - customers with doctorate degrees exhibited lowest revolving balance. This suggests that they - with the highest education level - pays off their credit card debt the best.
 
 

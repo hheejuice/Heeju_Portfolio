@@ -39,12 +39,12 @@ summary(df) # summary statistics
 #check the number of unique client number
 length(unique(df[,"CLIENTNUM"])) # total rows are 10127, so there is no duplicates in client number
 
-#check for the number of NA, 0, missing values for each column
-sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
+#check for the number of NA, missing values for each column
+sapply(df, function(x) sum(is.na(x) | x == "")) # no such values
 
 ```
 
-The original dataset had 10127 rows and 23 columns. As suggested from the author of dataset, the last two columns containing the word "Naive" has been removed from the dataset, resulting a dataset with 10127 rows and 21 columns. There was no duplicated values in 'CLIENTNUM' column. A considerable amount of NA values has been found in a number of columns, and they will be pre-processed as we go along.
+The original dataset had 10127 rows and 23 columns. As suggested from the author of dataset, the last two columns containing the word "Naive" has been removed from the dataset, resulting a dataset with 10127 rows and 21 columns. There was no duplicated values in 'CLIENTNUM' column. There was no NA or missing values in the data set that needs to be cleaned.
 
 ### Outlier Removal
 
@@ -230,74 +230,90 @@ df2[1:5,] # check
 
 ### Create Tables for Analysis
 
-The following section will examine and compare quantitative values, and look for any meaningful insights from the dataset.
-
-```{r na, echo=TRUE}
-# Check for NA values in column
-#check for the number of NA, 0, missing values for each column
-sapply(df, function(x) sum(is.na(x) | x == 0 | x == ""))
-
-sapply(df2, function(x) sum(is.na(x) | x == 0 | x == ""))
-```
+The following section will examine and compare quantitative values, and look for any meaningful insights from the data set.
 
 #### Gender and Age
 
-In this section, the dataset has been grouped by gender and age. I then calculated the mean utilization ratio for each group to compare card usage across diferent gender and age groups.
+In this section, the dataset has been grouped by gender and age. I then calculated the mean utilization ratio for each group to compare the spending nature of different gender and age groups.
 
 ```{r genderage, echo=TRUE}
-#group by biography info
-#group by gender and age for utilization ratio comparison
+#group by biography info - gender and age - for utilization ratio comparison
 summary <- df2 %>%
   group_by(Gender, Age) %>%
-  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio))
+  summarise(count = n(), # count the number of data for each group
+            mean_util_ratio = mean(Avg_Utilization_Ratio)) # calculate mean utilization ratio for each group
 kable(summary)
-
-
 ```
 
+The 70+ age male group had mean utilization ratio of 0.46 which is very high compared to the mean ratio of other customer groups that were in the range of 0.19-0.37. However, the group only had 1 number of observations. Also, since there is no 70+ female credit card customer in our data set, there is no group to compare the 70+ male group against. Therefore, 70+ male group will be excluded from comparison analysis.
+
+Overall, male credit card customers exhibited lower credit utilization ratio compared to that of female credit card customers. Utilization ratio is the amount of money you've been using on credit divided by your credit limit - expressed as percentages. Therefore, the above table suggests that the female customers are more likely to use high amount of revolving credit compared with their credit limit. This may indicate that males are doing better job managing their credit, and that females are overspending more than males.
+
+The credit card customers in their twenties exhibited the highest utilization ratio among all age groups. This was true for both male and female. Also, the customers in their forties exhibited the lowest utilization ratio among all. This may indicate that people in their forties in general are better at managing credit compared to other age groups, while people in their twenties are doing worst at it.
+ 
 #### Marital status
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+In this section, the data set will be grouped by their marital status.
+
 ```{r married, echo=TRUE}
-#group by family info
-#group by marital status for multiple comparisons
+#group by family info - marital status - for comparison
 summary2 <- df2 %>%
   group_by(Marital_Status) %>%
-  summarise(mean_inactive_months_count = mean(Months_Inactive_12_mon),
-            mean_util_ratio = mean(Avg_Utilization_Ratio),
-            mean_trans_count = mean(Total_Trans_Ct))
+  summarise(mean_inactive_12_months = mean(Months_Inactive_12_mon),
+            mean_util_ratio = mean(Avg_Utilization_Ratio))
 kable(summary2)
-#married who has the highest utilization ratio are least likely to be inactive for 12 months
 ```
 
+The group with unknown marital status will be excluded from analysis due to their lack of information. The 'Months_Inactive_12_mon' column in the original dataset shows how likely is a person to stay inactive for 12 months on their credit card. Therefore, the 'mean_inactive_12_months' column in the table created above shows the same thing but for each group with different marital status. According to the table, the married exhibited lowest number of 2.331089 for 'mean_inactive_12_months' whereas the divorced exhibited the highest number of 2.356354. This suggests that the married are least likely to be inactive for 12 months. The married also had the highest credit utilization ratio, suggesting they tend to spend more compared to divorced or single credit card customers.
+
 #### Dependents
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+This section will have the data set grouped by the number of dependents. 
+
 ```{r dependents, echo=TRUE}
 #group by number of dependents
 summary3 <- df2 %>%
   group_by(Dependent_Count) %>%
-  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio), 
-            mean_trans_count = mean(Total_Trans_Ct),
-            mean_revolving_balance = mean(Total_Revolving_Bal))
+  summarise(mean_revolving_balance = mean(Total_Revolving_Bal),
+            mean_util_ratio = mean(Avg_Utilization_Ratio), 
+            mean_trans_count = mean(Total_Trans_Ct))
 kable(summary3)
 ```
 
+The revolving balance is the amount of unpaid credit card spending at the end of billing cycle. The mean revolving balance increased in proportion to the number of dependents, although there was a slight decrease in revolving balance for the group with 3-4 dependents. This suggests that credit card customers with more number of dependents are more likely to have hard time paying off their credit card.
+
+As opposed to the revolving balance, the credit utilization ratio was in inverse proportion to the number of dependents. Group of card customers with no dependents exhibited the highest utilization ratio. This indicates that people with no dependents spend credit card more compared to people with dependents. 
+
+In summary, the credit card users with many dependents are having hard time paying off their credit card back, although they are better at managing credit card and keeping the spending low.
+
 #### Card Class
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+The data set will be grouped by card categories in this section.
+
 ```{r card, echo=TRUE}
-#group by card info
+#group by card info 
 #calculated revolving balance percentage for better comparison
 summary4 <- df2 %>%
   group_by(Card_Category) %>%
-  summarise(mean_util_ratio = mean(Avg_Utilization_Ratio),
-            mean_credit_limit = mean(Credit_Limit), 
-            mean_revolving_balance = mean(Total_Revolving_Bal),
-            revolving_balance_perc = (mean_revolving_balance/mean_credit_limit)*100) %>%
-    arrange(match(Card_Category, c("Blue","Silver","Platinum","Gold")))
+  summarise(mean_credit_limit = mean(Credit_Limit), # mean credit value for each card group
+            mean_revolving_balance = mean(Total_Revolving_Bal), # mean revolving balance for each group
+            # calculate unpaid credit balance (revolving balance) / total credit limit - in percentages
+            revolving_balance_perc = (mean_revolving_balance/mean_credit_limit)*100,
+            mean_util_ratio = mean(Avg_Utilization_Ratio)*100) %>% # mean utilization ratio in percentages
+  arrange(match(Card_Category, c("Blue","Silver","Platinum","Gold"))) # in the order of least to most prestigious card type
 kable(summary4)
 ```
 
+The utilization ratio shown in the 'mean_util_ratio' is the used amount divided by total credit limit. As opposed to that, the 'revolving_balance_perc' I calculated is the revolving balance divided by total credit limit. In short, the former shows the percentage amount of your credit card spending, whereas the latter shows how much you couldn't pay off your spending amount at the end of the billing cycle. 
+
+Overall, the revolving balance/credit limit and the utilization ratio exhibited same patterns. They were both high for blue cards, and low for all other card types - but lowest for platinum. The utilization ratio was about 29% for blue card customers. However, the customers with silver, platinum, and gold cards have utilization ratio in the range of 4%-6%, as opposed to the 29% for blue card customers. This suggests that customers with blue cards, which is the least prestigious card type, tend to use the card a lot compared to customers with different card types, and the customers with other card types spend much less on their credit card. 
+
+The revolving balance/credit limit was about 15% for blue card customers, which is about half of the utilization ratio. For other card type customers, the revolving balance/credit limit is only slightly lower than their utilization ratio. This suggests that blue card customers are doing better job managing their credit by paying off their debt on time.
+
 #### Education Level
-dlkfnalsdnflsnflansdlfnaflansflanlafnlanlnflnlna
+
+In this section, the data will be grouped by education level.
+
 ```{r education, echo=TRUE}
 #group by education level for comparison of credit limit and revolving balance
 summary5 <- df2 %>%
@@ -308,6 +324,6 @@ summary5 <- df2 %>%
 kable(summary5)
 ```
 
-
+Surprisingly, there was no clear patterns in credit limits across different education level. Uneducated and post-graduate customers had higher credit limit than other groups of people. The amount of revolving balance was similar for all groups but doctorate level - customers with doctorate degrees exhibited lowest revolving balance. This suggests that they - with the highest education level - pays off their credit card debt the best.
 
 
